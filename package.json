@@ -1,0 +1,9 @@
+{
+    "name": "penfumes-by-liad",
+    "version": "1.0.0",
+    "description": "Luxury perfumes website",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx serve -s ."
+    }
+}
