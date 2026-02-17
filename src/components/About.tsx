@@ -2,7 +2,7 @@ import { motion, Variants } from 'framer-motion';
 import { useTranslations } from '../hooks/useTranslations';
 
 const textKeys = ['about_intro', 'about_goal', 'about_reason'];
-const questionKeys = ['about_q1', 'about_q2'];
+const questionKeys = ['about_q1', 'about_q2', 'about_q3'];
 const bulletKeys = ['about_b1', 'about_b2', 'about_b3'];
 
 const stagger: Variants = {
