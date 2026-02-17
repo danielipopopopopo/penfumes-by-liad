@@ -94,9 +94,9 @@ export default function CartSidebar() {
                                 {/* Delivery options */}
                                 <div className="flex flex-col gap-2 mb-4">
                                     <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">{t('delivery_label')}</div>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-col gap-2">
                                         <label
-                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                            className={`flex items-center justify-between p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200
                                                 ${deliveryType === 'pickup'
                                                     ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
                                                     : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
@@ -104,26 +104,29 @@ export default function CartSidebar() {
                                         >
                                             <input type="radio" name="delivery" checked={deliveryType === 'pickup'} onChange={() => setDeliveryType('pickup')} className="hidden" />
                                             <span>{t('pickup')}</span>
+                                            {deliveryType === 'pickup' && <span className="text-[10px]">✓</span>}
                                         </label>
                                         <label
-                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                            className={`flex items-center justify-between p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200
                                                 ${deliveryType === 'ganei_tikva'
                                                     ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
-                                                    : 'border(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
+                                                    : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
                                                 }`}
                                         >
                                             <input type="radio" name="delivery" checked={deliveryType === 'ganei_tikva'} onChange={() => setDeliveryType('ganei_tikva')} className="hidden" />
                                             <span>{t('ganei_tikva')}</span>
+                                            {deliveryType === 'ganei_tikva' && <span className="text-[10px]">✓</span>}
                                         </label>
                                         <label
-                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                            className={`flex items-center justify-between p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200
                                                 ${deliveryType === 'regular'
-                                                    ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
+                                                    ? 'border-[var(--color-gold)] text(--color-gold)] bg-[var(--color-gold-glow)]'
                                                     : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
                                                 }`}
                                         >
                                             <input type="radio" name="delivery" checked={deliveryType === 'regular'} onChange={() => setDeliveryType('regular')} className="hidden" />
                                             <span>{t('shipping')}</span>
+                                            {deliveryType === 'regular' && <span className="text-[10px]">✓</span>}
                                         </label>
                                     </div>
                                 </div>
