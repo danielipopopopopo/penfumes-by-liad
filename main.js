@@ -121,7 +121,7 @@ const translations = {
     }
 };
 
-let currentLang = 'en';
+let currentLang = 'he';
 
 const updateLanguage = () => {
     const elements = document.querySelectorAll('[data-i18n]');
@@ -373,6 +373,7 @@ const initPayPal = () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    updateLanguage();
     navSlide();
     scrollAnimations();
     updateCartUI();
