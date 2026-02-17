@@ -42,8 +42,8 @@ const translations = {
         signup_btn: "Sign Up",
         have_account: "Already have an account? Login",
         forgot_password_title: "Reset Password",
-        enter_email_otp: "Enter your email to receive a password reset link.",
-        send_code: "Send Link",
+        enter_reset_link_msg: "Enter your email to receive a link to reset your password.",
+        send_link: "Send Link",
         new_password_title: "New Password",
         reset_password_btn: "Reset Password",
         logout: "Logout",
@@ -92,8 +92,8 @@ const translations = {
         signup_btn: "הרשם",
         have_account: "כבר יש לך חשבון? התחבר",
         forgot_password_title: "איפוס סיסמה",
-        enter_email_otp: "הזן את המייל שלך לקבלת קישור לאיפוס סיסמה.",
-        send_code: "שלח קישור",
+        enter_reset_link_msg: "הזן את המייל שלך לקבלת קישור לאיפוס סיסמה.",
+        send_link: "שלח קישור",
         new_password_title: "סיסמה חדשה",
         reset_password_btn: "אפס סיסמה",
         logout: "התנתק",
@@ -429,8 +429,13 @@ const showModal = (formId) => {
     const modal = document.getElementById('auth-modal');
     const forms = ['login-form', 'signup-form', 'forgot-password-form', 'reset-password-form'];
 
+    // Clear all inputs when switching forms
+    const inputs = modal.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
+
     forms.forEach(id => {
-        document.getElementById(id).style.display = id === formId ? 'block' : 'none';
+        const el = document.getElementById(id);
+        if (el) el.style.display = id === formId ? 'block' : 'none';
     });
 
     modal.classList.add('active');
@@ -559,6 +564,7 @@ const handleResetPassword = (e) => {
         localStorage.setItem('users', JSON.stringify(users));
 
         alert(currentLang === 'he' ? "הסיסמה שונתה בהצלחה! כעת ניתן להתחבר." : "Password reset successfully! You can now login.");
+        resetEmail = null;
         showLogin();
     }
 };

@@ -196,10 +196,10 @@
             <!-- Forgot Password - Email Form -->
             <div id="forgot-password-form" style="display: none;">
                 <h2 data-i18n="forgot_password_title">Reset Password</h2>
-                <p data-i18n="enter_email_otp">Enter your email to receive a ONE TIME verification code.</p>
+                <p data-i18n="enter_reset_link_msg">Enter your email to receive a link to reset your password.</p>
                 <form onsubmit="handleForgotPassword(event)">
                     <input type="email" id="forgot-email" placeholder="Email" required>
-                    <button type="submit" class="btn-shop" data-i18n="send_code">Send Code</button>
+                    <button type="submit" class="btn-shop" data-i18n="send_link">Send Link</button>
                 </form>
                 <div class="auth-links">
                     <a href="#" onclick="showLogin()" data-i18n="back_to_login">Back to Login</a>
@@ -214,6 +214,9 @@
                     <input type="password" id="new-password" placeholder="New Password" required>
                     <button type="submit" class="btn-shop" data-i18n="reset_password_btn">Reset Password</button>
                 </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showLogin()" data-i18n="back_to_login">Back to Login</a>
+                </div>
             </div>
 
         </div>
