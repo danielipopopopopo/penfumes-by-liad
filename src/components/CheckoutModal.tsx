@@ -237,41 +237,41 @@ export default function CheckoutModal({
                                 )}
 
                                 {/* Method Selection or PayPal Buttons */}
-                                {!method ? (
-                                    <div className="space-y-3">
-                                        <button
-                                            onClick={() => {
-                                                if (showEmailInput && (!guestEmail || !guestEmail.includes('@'))) {
-                                                    setError(lang === 'he' ? 'נא להזין אימייל תקין' : 'Please enter a valid email');
-                                                    return;
-                                                }
-                                                if (isDelivery && (!address.city || !address.street || !address.houseNum)) {
-                                                    setError(lang === 'he' ? 'נא למלא כתובת (עיר, רחוב ומספר בית)' : 'Please fill city, street and house number');
-                                                    return;
-                                                }
-                                                setError('');
-                                                setMethod('paypal');
-                                            }}
-                                            className="w-full py-4 bg-[#0070ba] text-white font-bold rounded-xl hover:bg-[#003087] transition-colors flex items-center justify-center gap-2 shadow-lg"
-                                        >
-                                            Pay with <span className="italic font-serif font-black">PayPal</span>
-                                        </button>
+                                <PayPalScriptProvider options={{
+                                    clientId: PAYPAL_CLIENT_ID,
+                                    currency: "ILS",
+                                    intent: "CAPTURE"
+                                }}>
+                                    {!method ? (
+                                        <div className="space-y-3">
+                                            <button
+                                                onClick={() => {
+                                                    if (showEmailInput && (!guestEmail || !guestEmail.includes('@'))) {
+                                                        setError(lang === 'he' ? 'נא להזין אימייל תקין' : 'Please enter a valid email');
+                                                        return;
+                                                    }
+                                                    if (isDelivery && (!address.city || !address.street || !address.houseNum)) {
+                                                        setError(lang === 'he' ? 'נא למלא כתובת (עיר, רחוב ומספר בית)' : 'Please fill city, street and house number');
+                                                        return;
+                                                    }
+                                                    setError('');
+                                                    setMethod('paypal');
+                                                }}
+                                                className="w-full py-4 bg-[#0070ba] text-white font-bold rounded-xl hover:bg-[#003087] transition-colors flex items-center justify-center gap-2 shadow-lg"
+                                            >
+                                                Pay with <span className="italic font-serif font-black">PayPal</span>
+                                            </button>
 
-                                        <button disabled className="w-full py-4 bg-white/5 text-white/30 rounded-xl cursor-not-allowed border border-white/5">
-                                            Credit Card (Coming Soon)
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="w-full relative z-10">
-                                        <PayPalScriptProvider options={{
-                                            clientId: PAYPAL_CLIENT_ID,
-                                            currency: "ILS",
-                                            intent: "capture"
-                                        }}>
+                                            <button disabled className="w-full py-4 bg-white/5 text-white/30 rounded-xl cursor-not-allowed border border-white/5">
+                                                Credit Card (Coming Soon)
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full relative z-10">
                                             <PayPalButtons
                                                 style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
                                                 createOrder={(data, actions) => {
-                                                    console.log('Creating PayPal order for total:', total.toFixed(2));
+                                                    console.log('Finalizing Order for:', total.toFixed(2), 'ILS');
                                                     return actions.order.create({
                                                         intent: "CAPTURE",
                                                         purchase_units: [
@@ -279,6 +279,12 @@ export default function CheckoutModal({
                                                                 amount: {
                                                                     currency_code: "ILS",
                                                                     value: total.toFixed(2),
+                                                                    breakdown: {
+                                                                        item_total: {
+                                                                            currency_code: "ILS",
+                                                                            value: total.toFixed(2)
+                                                                        }
+                                                                    }
                                                                 },
                                                                 description: `Order for ${userEmail || 'Guest'}`,
                                                             },
@@ -286,36 +292,39 @@ export default function CheckoutModal({
                                                     });
                                                 }}
                                                 onApprove={async (data, actions) => {
-                                                    console.log('PayPal payment approved, capturing...', data);
+                                                    console.log('Capture starting for:', data.orderID);
                                                     if (actions.order) {
-                                                        const details = await actions.order.capture();
-                                                        console.log('Payment captured successfully:', details);
-                                                        await handleApprove();
+                                                        try {
+                                                            const details = await actions.order.capture();
+                                                            console.log('Capture complete:', details);
+                                                            await handleApprove();
+                                                        } catch (err: any) {
+                                                            console.error('Capture FAILED:', err);
+                                                            setError(lang === 'he' ? `שגיאה באישור התשלום: ${err.message}` : `Payment capture failed: ${err.message}`);
+                                                        }
                                                     }
                                                 }}
                                                 onCancel={(data) => {
-                                                    console.log('PayPal payment cancelled:', data);
+                                                    console.log('User cancelled:', data);
                                                     setError(lang === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
                                                 }}
                                                 onError={(err) => {
-                                                    console.error('PayPal Terminal Error:', err);
-                                                    const errMsg = err?.toString() || 'Unknown error';
+                                                    console.error('PayPal Error Event:', err);
                                                     setError(lang === 'he'
-                                                        ? `שגיאת פייפאל: ${errMsg}. וודא שהמזהה (Client ID) תקין ושהחשבון מוגדר לקבל שקלים.`
-                                                        : `PayPal Error: ${errMsg}. Ensure Client ID is correct and account can receive ILS.`
+                                                        ? `שגיאת פייפאל: הקוד או החשבון לא תקינים. וודא שהחשבון מוגדר ל-ILS ושה-Client ID נכון.`
+                                                        : `PayPal Error: Check Client ID and ILS currency support in your account.`
                                                     );
-                                                    alert(`PayPal Error Details: ${errMsg}`);
                                                 }}
                                             />
-                                        </PayPalScriptProvider>
-                                        <button
-                                            onClick={() => setMethod(null)}
-                                            className="mt-4 w-full py-2 text-sm text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            {lang === 'he' ? 'חזרה' : 'Back'}
-                                        </button>
-                                    </div>
-                                )}
+                                            <button
+                                                onClick={() => setMethod(null)}
+                                                className="mt-4 w-full py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                                            >
+                                                {lang === 'he' ? 'חזרה' : 'Back'}
+                                            </button>
+                                        </div>
+                                    )}
+                                </PayPalScriptProvider>
                             </div>
                         )}
                     </motion.div>
