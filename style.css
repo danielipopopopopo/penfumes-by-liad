@@ -676,6 +676,35 @@ body.rtl .remove-item {
     margin-right: 10px;
 }
 
+#paypal-button-container {
+    width: 100%;
+}
+
+.checkout-btn {
+    display: none;
+    /* We will use PayPal buttons instead for main checkout */
+}
+
+.delivery-options {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.delivery-option {
+    display: flex;
+    align-items: center;
+    color: var(--white);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.delivery-option input {
+    margin-right: 10px;
+    accent-color: var(--gold);
+}
+
 @media screen and (max-width: 400px) {
     .cart-sidebar {
         width: 100%;

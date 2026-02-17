@@ -12,6 +12,9 @@
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=ASZPZMqHFlMuFc_9Z5eE3Pb1HTrIXElmpLhYkVSQsh9eGXgXllsYIzqCwwNr9uo1sgIij43zc20ZKIkP&currency=ILS"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <title>Penfumes by Liad - Luxury Fragrances</title>
 </head>
 
@@ -54,11 +57,22 @@
             <p class="empty-cart-msg" data-i18n="empty_cart">Your cart is empty.</p>
         </div>
         <div class="cart-footer">
+            <div class="delivery-options">
+                <label class="delivery-option">
+                    <input type="radio" name="delivery" value="pickup" checked onchange="updateCartTotal()">
+                    <span data-i18n="pickup">Self Pickup (Free)</span>
+                </label>
+                <label class="delivery-option">
+                    <input type="radio" name="delivery" value="shipping" onchange="updateCartTotal()">
+                    <span data-i18n="shipping">Delivery (+₪60)</span>
+                </label>
+            </div>
             <div class="total-price">
                 <span data-i18n="total">Total:</span>
                 <span id="cart-total">₪0</span>
             </div>
             <button class="checkout-btn" data-i18n="checkout">Checkout</button>
+            <div id="paypal-button-container" style="margin-top: 1rem;"></div>
         </div>
     </div>
 

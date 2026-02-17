@@ -140,9 +140,26 @@ const scrollAnimations = () => {
 
 /* Cart Logic */
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let isDelivery = false;
+
+/* EmailJS Initialization */
+// REPLACE THESE WITH YOUR ACTUAL KEYS FROM EMAILJS.COM
+const SERVICE_ID = "service_qnztk6h";
+const TEMPLATE_ID = "template_yv9btwr";
+const PUBLIC_KEY = "FXlsl4AhvCVg7uCeD";
+
+(function () {
+    emailjs.init(PUBLIC_KEY);
+})();
 
 const toggleCart = () => {
     document.getElementById('cart-sidebar').classList.toggle('active');
+};
+
+const updateCartTotal = () => {
+    const deliveryRadio = document.querySelector('input[name="delivery"]:checked');
+    isDelivery = deliveryRadio ? deliveryRadio.value === 'shipping' : false;
+    updateCartUI();
 };
 
 const updateCartUI = () => {
@@ -154,7 +171,9 @@ const updateCartUI = () => {
     cartCount.innerText = cart.length;
 
     // Calculate Total
-    let total = cart.reduce((acc, item) => acc + parseInt(item.price.replace(/[^\d]/g, '')), 0);
+    let subtotal = cart.reduce((acc, item) => acc + parseInt(item.price.replace(/[^\d]/g, '')), 0);
+    let total = isDelivery ? subtotal + 60 : subtotal;
+
     cartTotal.innerText = `₪${total}`;
 
     // Render Items
@@ -192,7 +211,6 @@ const addToCart = (nameKey, priceKey) => {
     cart.push({ name, price, nameKey, priceKey });
     updateCartUI();
 
-    // Open cart to show item
     document.getElementById('cart-sidebar').classList.add('active');
 };
 
@@ -201,10 +219,97 @@ const removeFromCart = (index) => {
     updateCartUI();
 };
 
+/* PayPal Initialization */
+const initPayPal = () => {
+    if (!window.paypal) return;
+
+    paypal.Buttons({
+        createOrder: (data, actions) => {
+            let subtotal = cart.reduce((acc, item) => acc + parseInt(item.price.replace(/[^\d]/g, '')), 0);
+            let shipping = isDelivery ? 60 : 0;
+            let total = subtotal + shipping;
+
+            if (total === 0) return actions.reject();
+
+            // Create items array for PayPal
+            const paypalItems = cart.map(item => ({
+                name: item.name,
+                unit_amount: {
+                    currency_code: 'ILS',
+                    value: item.price.replace(/[^\d]/g, '')
+                },
+                quantity: '1'
+            }));
+
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: 'ILS',
+                        value: total.toString(),
+                        breakdown: {
+                            item_total: {
+                                currency_code: 'ILS',
+                                value: subtotal.toString()
+                            },
+                            shipping: {
+                                currency_code: 'ILS',
+                                value: shipping.toString()
+                            }
+                        }
+                    },
+                    items: paypalItems
+                }]
+            });
+        },
+        onApprove: (data, actions) => {
+            return actions.order.capture().then((details) => {
+                // Prepare Email Params
+                const shippingAddress = details.purchase_units[0].shipping.address;
+                const addressString = `${shippingAddress.address_line_1}, ${shippingAddress.admin_area_2}, ${shippingAddress.admin_area_1}, ${shippingAddress.postal_code}, ${shippingAddress.country_code}`;
+
+                const subtotal = cart.reduce((acc, item) => acc + parseInt(item.price.replace(/[^\d]/g, '')), 0);
+                const shipping = isDelivery ? 60 : 0;
+
+                const emailParams = {
+                    order_id: details.id,
+                    customer_name: details.payer.name.given_name + ' ' + details.payer.name.surname,
+                    email: details.payer.email_address,
+                    delivery_method: isDelivery ? (translations[currentLang].shipping || "Delivery") : (translations[currentLang].pickup || "Self Pickup"),
+                    shipping_address: isDelivery ? addressString : "N/A (Pickup)",
+                    items_list: cart.map(i => `${i.name} (x1)`).join("<br>"),
+                    cost_shipping: shipping,
+                    cost_total: details.purchase_units[0].amount.value,
+                    subtotal: subtotal
+                };
+
+                // Send Email
+                emailjs.send(SERVICE_ID, TEMPLATE_ID, emailParams)
+                    .then(function (response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        alert(`Transaction completed! Confirmation sent using EmailJS.`);
+                    }, function (error) {
+                        console.log('FAILED...', error);
+                        alert('Transaction completed, but email failed to send (Check Console).');
+                    });
+
+                // Clear Cart
+                cart = [];
+                updateCartUI();
+                toggleCart();
+            });
+        },
+        onError: (err) => {
+            console.error('PayPal Error:', err);
+            alert('Something went wrong with the payment. Please try again.');
+        }
+    }).render('#paypal-button-container');
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     navSlide();
     scrollAnimations();
     updateCartUI();
+    initPayPal();
 
     // Attach Event Listeners to "Add to Cart" Buttons
     // Note: In a real app, products would have IDs. Here mapping via index for simplicity
