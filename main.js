@@ -427,7 +427,7 @@ const updateAuthUI = () => {
 
 const showModal = (formId) => {
     const modal = document.getElementById('auth-modal');
-    const forms = ['login-form', 'signup-form', 'forgot-password-form', 'otp-form', 'reset-password-form'];
+    const forms = ['login-form', 'signup-form', 'forgot-password-form', 'reset-password-form'];
 
     forms.forEach(id => {
         document.getElementById(id).style.display = id === formId ? 'block' : 'none';
