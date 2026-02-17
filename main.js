@@ -1,129 +1,35 @@
-const translations = {
-    en: {
-        home: "Home",
-        collection: "Store",
-        about: "About Us",
-        contact: "Contact",
-        hero_title: "penfumes by liad",
-        about_title: "Parfume a by Liad",
-        about_intro: "This isn't just another perfume – it's an experience.",
-        about_goal: "We aren't just another store that sells perfumes. Our goal is simple: to make sure you're never disappointed with the perfume you buy.",
-        about_reason: "At <strong>Parfume a by Liad</strong>, we know how frustrating it is to buy an expensive perfume and then realize it doesn't last, doesn't sit well on your skin, or simply isn't \"it\". That's exactly why we're here.",
-        about_q1: "✨ Unsure which perfume to choose?",
-        about_q2: "✨ Not certain if the scent is right for you?",
-        about_solution: "With us, you can purchase small glass bottles of 2 / 3 / 5 ml of any perfume you desire, to truly test it – see how long it remains on the skin, how it develops throughout the day, and how it feels to you.",
-        about_full_bottle: "Only when you're certain of the scent and sure it's worth it – you move forward to the full bottle.",
-        about_selection: "At <strong>Parfume a by Liad</strong>, every scent is carefully selected to project luxury, presence, and style, leaving an unforgettable impression.",
-        about_b1: "✨ High-quality and long-lasting fragrances",
-        about_b2: "✨ A smart and disappointment-free shopping experience",
-        about_b3: "✨ Luxurious design – also perfect as a gift",
-        about_footer: "Because it's not just a perfume – it's your identity in a bottle.",
-        lang_btn: "HE",
+let translations = {};
+let currentLang = 'he';
 
-        // Shop Translations
-        collection_title: "Shop",
-        prod_1_name: "Midnight Rose",
-        prod_1_desc: "A bold blend of dark rose and oud.",
-        prod_1_price: "₪250",
-        prod_2_name: "Golden Amber",
-        prod_2_desc: "Warm amber with hints of vanilla.",
-        prod_2_price: "₪280",
-        prod_3_name: "Ocean Mist",
-        prod_3_desc: "Fresh aquatic notes with citrus.",
-        prod_3_price: "₪220",
-        add_to_cart: "Add to Cart",
+const loadProjectData = async () => {
+    try {
+        const [transRes, usersRes] = await Promise.all([
+            fetch('translations.json'),
+            fetch('users.json')
+        ]);
 
-        // Cart Translations
-        cart_title: "Your Cart",
-        empty_cart: "Your cart is empty.",
-        total: "Total:",
-        checkout: "Checkout",
-        pickup: "Self Pickup (Free)",
-        shipping: "Delivery (+₪60)",
-        footer_copy: "&copy; 2026 Penfumes by Liad. All Rights Reserved.",
+        translations = await transRes.json();
+        const initialUsers = await usersRes.json();
 
-        // Auth Translations
-        login_signup: "Login / Sign Up",
-        login_title: "Login",
-        login_btn: "Login",
-        need_account: "Need an account? Sign Up",
-        forgot_password: "Forgot Password?",
-        signup_title: "Sign Up",
-        signup_btn: "Sign Up",
-        have_account: "Already have an account? Login",
-        forgot_password_title: "Reset Password",
-        enter_reset_link_msg: "Enter your email to receive a link to reset your password.",
-        send_link: "Send Link",
-        new_password_title: "New Password",
-        reset_password_btn: "Reset Password",
-        logout: "Logout",
-        hello: "Hello"
-    },
-    he: {
-        home: "בית",
-        collection: "חנות",
-        about: "עלינו",
-        contact: "צור קשר",
-        hero_title: "penfumes by liad",
-        about_title: "Parfume a by Liad",
-        about_intro: "זה לא עוד בושם – זו חוויה.",
-        about_goal: "אנחנו לא סתם עוד חנות שמוכרת בשמים. המטרה שלנו היא דבר אחד פשוט: שלא תתאכזב מהבושם שאתה קונה.",
-        about_reason: "ב־<strong>Parfume a by Liad</strong> אנחנו יודעים כמה זה מבאס לקנות בושם יקר ואז לגלות שהוא לא מחזיק, לא יושב טוב על העור, או שפשוט זה לא זה. בדיוק בגלל זה אנחנו כאן.",
-        about_q1: "✨ מתלבט איזה בושם לבחור?",
-        about_q2: "✨ לא בטוח אם הריח מתאים לך?",
-        about_solution: "אצלנו תוכל לרכוש בקבוקי זכוכית קטנים של 2 / 3 / 5 מ״ל מכל בושם שתרצה, לבדוק אותו באמת – לראות כמה זמן הוא נשאר על העור, איך הוא מתפתח במהלך היום, ואיך הוא מרגיש לך.",
-        about_full_bottle: "ורק כשאתה סגור על הריח ובטוח שהוא שווה לך – אתה מתקדם לבקבוק המלא.",
-        about_selection: "ב־<strong>Parfume a by Liad</strong> כל ניחוח נבחר בקפידה כדי לשדר יוקרה, נוכחות וסטייל, ולהשאיר רושם שאי אפשר לשכוח.",
-        about_b1: "✨ ניחוחות איכותיים ועמידים",
-        about_b2: "✨ חוויית קנייה חכמה וללא אכזבות",
-        about_b3: "✨ עיצוב יוקרתי – מושלם גם כמתנה",
-        about_footer: "כי זה לא סתם בושם – זו הזהות שלך בבקבוק.",
-        lang_btn: "EN",
+        // Merge initial users if not already in localStorage
+        let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+        initialUsers.forEach(initUser => {
+            if (!storedUsers.find(u => u.email === initUser.email)) {
+                storedUsers.push(initUser);
+            }
+        });
+        localStorage.setItem('users', JSON.stringify(storedUsers));
 
-        // Shop Translations
-        collection_title: "חנות",
-        prod_1_name: "ורד חצות",
-        prod_1_desc: "שילוב נועז של ורד כהה ואוד.",
-        prod_1_price: "₪250",
-        prod_2_name: "ענבר זהוב",
-        prod_2_desc: "ענבר חמים עם נגיעות וניל.",
-        prod_2_price: "₪280",
-        prod_3_name: "ערפל האוקיינוס",
-        prod_3_desc: "תווים ימיים רעננים עם הדרים.",
-        prod_3_price: "₪220",
-        add_to_cart: "הוסף לסל",
-
-        // Cart Translations
-        cart_title: "העגלה שלך",
-        empty_cart: "העגלה שלך ריקה.",
-        total: "סה\"כ:",
-        checkout: "לקופה",
-        pickup: "איסוף עצמי (חינם)",
-        shipping: "משלוח (+₪60)",
-        footer_copy: "&copy; 2026 Penfumes by Liad. כל הזכויות שמורות.",
-
-        // Auth Translations
-        login_signup: "התחבר / הרשם",
-        login_title: "התחברות",
-        login_btn: "התחבר",
-        need_account: "צריך חשבון? הרשם",
-        forgot_password: "שכחתי סיסמה",
-        signup_title: "הרשמה",
-        signup_btn: "הרשם",
-        have_account: "כבר יש לך חשבון? התחבר",
-        forgot_password_title: "איפוס סיסמה",
-        enter_reset_link_msg: "הזן את המייל שלך לקבלת קישור לאיפוס סיסמה.",
-        send_link: "שלח קישור",
-        new_password_title: "סיסמה חדשה",
-        reset_password_btn: "אפס סיסמה",
-        logout: "התנתק",
-        hello: "שלום"
+        // Start the app after data is loaded
+        initializeApp();
+    } catch (error) {
+        console.error("Failed to load project data:", error);
     }
 };
 
-let currentLang = 'he';
-
 const updateLanguage = () => {
+    if (!translations[currentLang]) return;
+
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -133,9 +39,12 @@ const updateLanguage = () => {
     });
 
     // Update switch button text
-    const langBtnText = translations[currentLang].lang_btn;
-    document.getElementById('lang-switch-desktop').innerText = langBtnText;
-    document.getElementById('lang-switch-mobile').innerText = langBtnText;
+    const langSwitchDesktop = document.getElementById('lang-switch-desktop');
+    const langSwitchMobile = document.getElementById('lang-switch-mobile');
+    const nextLang = currentLang === 'en' ? 'HE' : 'EN';
+
+    if (langSwitchDesktop) langSwitchDesktop.innerText = nextLang;
+    if (langSwitchMobile) langSwitchMobile.innerText = nextLang;
 
     // Update body class for RTL
     if (currentLang === 'he') {
@@ -372,7 +281,7 @@ const initPayPal = () => {
     }).render('#paypal-button-container');
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+const initializeApp = () => {
     updateLanguage();
     navSlide();
     scrollAnimations();
@@ -380,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initPayPal();
 
     // Attach Event Listeners to "Add to Cart" Buttons
-    // Note: In a real app, products would have IDs. Here mapping via index for simplicity
     const addBtns = document.querySelectorAll('.btn-shop');
     const products = [
         { name: 'prod_1_name', price: 'prod_1_price' },
@@ -393,7 +301,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     initAuth();
-});
+};
+
+document.addEventListener('DOMContentLoaded', loadProjectData);
 
 /* Authentication Logic */
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;

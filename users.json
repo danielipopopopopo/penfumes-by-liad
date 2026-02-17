@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Admin User",
+        "email": "admin@penfumes.com",
+        "password": "adminpassword123"
+    },
+    {
+        "name": "Liad Test",
+        "email": "test@liad.com",
+        "password": "password123"
+    }
+]
