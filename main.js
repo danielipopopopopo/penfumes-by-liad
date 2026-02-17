@@ -30,7 +30,27 @@ const translations = {
         checkout: "Checkout",
         pickup: "Self Pickup (Free)",
         shipping: "Delivery (+₪60)",
-        footer_copy: "&copy; 2026 Penfumes by Liad. All Rights Reserved."
+        footer_copy: "&copy; 2026 Penfumes by Liad. All Rights Reserved.",
+
+        // Auth Translations
+        login_signup: "Login / Sign Up",
+        login_title: "Login",
+        login_btn: "Login",
+        need_account: "Need an account? Sign Up",
+        forgot_password: "Forgot Password?",
+        signup_title: "Sign Up",
+        signup_btn: "Sign Up",
+        have_account: "Already have an account? Login",
+        forgot_password_title: "Reset Password",
+        enter_email_otp: "Enter your email to receive a ONE TIME verification code.",
+        send_code: "Send Code",
+        otp_title: "Enter Code",
+        code_sent_msg: "A 6-digit code has been sent to your email.",
+        verify_code: "Verify Code",
+        new_password_title: "New Password",
+        reset_password_btn: "Reset Password",
+        logout: "Logout",
+        hello: "Hello"
     },
     he: {
         home: "בית",
@@ -63,7 +83,27 @@ const translations = {
         checkout: "לקופה",
         pickup: "איסוף עצמי (חינם)",
         shipping: "משלוח (+₪60)",
-        footer_copy: "&copy; 2026 Penfumes by Liad. כל הזכויות שמורות."
+        footer_copy: "&copy; 2026 Penfumes by Liad. כל הזכויות שמורות.",
+
+        // Auth Translations
+        login_signup: "התחבר / הרשם",
+        login_title: "התחברות",
+        login_btn: "התחבר",
+        need_account: "צריך חשבון? הרשם",
+        forgot_password: "שכחתי סיסמה",
+        signup_title: "הרשמה",
+        signup_btn: "הרשם",
+        have_account: "כבר יש לך חשבון? התחבר",
+        forgot_password_title: "איפוס סיסמה",
+        enter_email_otp: "הזן את המייל שלך לקבלת קוד אימות חד פעמי.",
+        send_code: "שלח קוד",
+        otp_title: "הזן קוד",
+        code_sent_msg: "קוד בן 6 ספרות נשלח למייל שלך.",
+        verify_code: "אמת קוד",
+        new_password_title: "סיסמה חדשה",
+        reset_password_btn: "אפס סיסמה",
+        logout: "התנתק",
+        hello: "שלום"
     }
 };
 
@@ -91,6 +131,8 @@ const updateLanguage = () => {
         document.body.classList.remove('rtl');
         document.documentElement.setAttribute('lang', 'en');
     }
+
+    updateAuthUI();
 };
 
 const navSlide = () => {
@@ -334,4 +376,179 @@ document.addEventListener('DOMContentLoaded', () => {
     addBtns.forEach((btn, index) => {
         btn.onclick = () => addToCart(products[index].name, products[index].price);
     });
+
+    initAuth();
 });
+
+/* Authentication Logic */
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+let generatedOTP = null;
+let resetEmail = null;
+
+const initAuth = () => {
+    const authLink = document.getElementById('auth-link');
+    const authLinkMobile = document.getElementById('auth-link-mobile');
+    const modal = document.getElementById('auth-modal');
+    const closeBtn = document.querySelector('.close-modal');
+
+    const toggleAuth = (e) => {
+        e.preventDefault();
+        if (currentUser) {
+            handleLogout();
+        } else {
+            showModal('login-form');
+        }
+    };
+
+    if (authLink) authLink.onclick = toggleAuth;
+    if (authLinkMobile) authLinkMobile.onclick = toggleAuth;
+
+    if (closeBtn) {
+        closeBtn.onclick = () => modal.classList.remove('active');
+    }
+
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.classList.remove('active');
+        }
+    };
+
+    updateAuthUI();
+};
+
+const updateAuthUI = () => {
+    const authLink = document.getElementById('auth-link');
+    if (authLink) {
+        if (currentUser) {
+            const helloStr = translations[currentLang].hello || "Hello";
+            const logoutStr = translations[currentLang].logout || "Logout";
+            authLink.innerHTML = `${helloStr}, ${currentUser.name.split(' ')[0]} | <span style="text-decoration: underline;">${logoutStr}</span>`;
+            authLink.setAttribute('data-i18n', ''); // Disable i18n for dynamic text
+        } else {
+            authLink.setAttribute('data-i18n', 'login_signup');
+            authLink.innerText = translations[currentLang].login_signup;
+        }
+    }
+};
+
+const showModal = (formId) => {
+    const modal = document.getElementById('auth-modal');
+    const forms = ['login-form', 'signup-form', 'forgot-password-form', 'otp-form', 'reset-password-form'];
+
+    forms.forEach(id => {
+        document.getElementById(id).style.display = id === formId ? 'block' : 'none';
+    });
+
+    modal.classList.add('active');
+};
+
+const showLogin = () => showModal('login-form');
+const showSignUp = () => showModal('signup-form');
+const showForgotPassword = () => showModal('forgot-password-form');
+
+const handleSignUp = (e) => {
+    e.preventDefault();
+    const name = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value.toLowerCase();
+    const password = document.getElementById('signup-password').value;
+
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find(u => u.email === email)) {
+        alert(currentLang === 'he' ? "האימייל כבר קיים במערכת" : "Email already exists");
+        return;
+    }
+
+    const newUser = { name, email, password };
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    document.getElementById('auth-modal').classList.remove('active');
+    updateAuthUI();
+    alert(currentLang === 'he' ? "נרשמת בהצלחה!" : "Signed up successfully!");
+};
+
+const handleLogin = (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.toLowerCase();
+    const password = document.getElementById('login-password').value;
+
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        document.getElementById('auth-modal').classList.remove('active');
+        updateAuthUI();
+    } else {
+        alert(currentLang === 'he' ? "אימייל או סיסמה שגויים" : "Invalid email or password");
+    }
+};
+
+const handleLogout = () => {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    updateAuthUI();
+};
+
+const handleForgotPassword = (e) => {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value.toLowerCase();
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email);
+
+    if (!user) {
+        alert(currentLang === 'he' ? "אימייל לא נמצא" : "Email not found");
+        return;
+    }
+
+    resetEmail = email;
+    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Use EmailJS to send OTP
+    // NOTE: User must have a template that accepts {{otp_code}} and {{to_email}}
+    const templateParams = {
+        to_email: email,
+        otp_code: generatedOTP
+    };
+
+    // REPLACE 'template_otp_placeholder' with the actual Template ID for OTP
+    emailjs.send(SERVICE_ID, 'template_v0a7hth', templateParams)
+        .then(() => {
+            console.log("OTP Sent:", generatedOTP); // For debugging
+            showModal('otp-form');
+        }, (error) => {
+            console.error("FAILED to send OTP", error);
+            alert("Failed to send code. Please try again later.");
+        });
+};
+
+const handleVerifyOTP = (e) => {
+    e.preventDefault();
+    const inputOTP = document.getElementById('otp-input').value;
+
+    if (inputOTP === generatedOTP) {
+        showModal('reset-password-form');
+    } else {
+        alert(currentLang === 'he' ? "קוד שגוי" : "Invalid code");
+    }
+};
+
+const handleResetPassword = (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById('new-password').value;
+
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    const userIndex = users.findIndex(u => u.email === resetEmail);
+
+    if (userIndex !== -1) {
+        users[userIndex].password = newPassword;
+        localStorage.setItem('users', JSON.stringify(users));
+
+        alert(currentLang === 'he' ? "הסיסמה שונתה בהצלחה! כעת ניתן להתחבר." : "Password reset successfully! You can now login.");
+        showLogin();
+    }
+};

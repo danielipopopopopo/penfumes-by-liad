@@ -28,6 +28,7 @@
                 <li><a href="#collection" data-i18n="collection">Store</a></li>
                 <li><a href="#about" data-i18n="about">About Us</a></li>
                 <li><a href="#contact" data-i18n="contact">Contact</a></li>
+                <li class="desktop-only"><a href="#" id="auth-link" data-i18n="login_signup">Login / Sign Up</a></li>
                 <li class="desktop-only"><a href="#" class="lang-switch-link" id="lang-switch-desktop">HE</a></li>
             </ul>
             <div class="nav-icons">
@@ -35,6 +36,9 @@
                 <div class="cart-icon" onclick="toggleCart()">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
+                </div>
+                <div class="auth-icon mobile-only" id="auth-link-mobile">
+                    <i class="fas fa-user"></i>
                 </div>
                 <div class="burger">
                     <div class="line1"></div>
@@ -156,6 +160,74 @@
             </div>
         </div>
     </footer>
+    <!-- Authentication Modals -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <h2 data-i18n="login_title">Login</h2>
+                <form onsubmit="handleLogin(event)">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit" class="btn-shop" data-i18n="login_btn">Login</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showSignUp()" data-i18n="need_account">Need an account? Sign Up</a>
+                    <a href="#" onclick="showForgotPassword()" data-i18n="forgot_password">Forgot Password?</a>
+                </div>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup-form" style="display: none;">
+                <h2 data-i18n="signup_title">Sign Up</h2>
+                <form onsubmit="handleSignUp(event)">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <button type="submit" class="btn-shop" data-i18n="signup_btn">Sign Up</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showLogin()" data-i18n="have_account">Already have an account? Login</a>
+                </div>
+            </div>
+
+            <!-- Forgot Password - Email Form -->
+            <div id="forgot-password-form" style="display: none;">
+                <h2 data-i18n="forgot_password_title">Reset Password</h2>
+                <p data-i18n="enter_email_otp">Enter your email to receive a ONE TIME verification code.</p>
+                <form onsubmit="handleForgotPassword(event)">
+                    <input type="email" id="forgot-email" placeholder="Email" required>
+                    <button type="submit" class="btn-shop" data-i18n="send_code">Send Code</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" onclick="showLogin()" data-i18n="back_to_login">Back to Login</a>
+                </div>
+            </div>
+
+            <!-- Forgot Password - OTP Form -->
+            <div id="otp-form" style="display: none;">
+                <h2 data-i18n="otp_title">Enter Code</h2>
+                <p data-i18n="code_sent_msg">A 6-digit code has been sent to your email.</p>
+                <form onsubmit="handleVerifyOTP(event)">
+                    <input type="text" id="otp-input" placeholder="Enter 6-digit code" required maxlength="6">
+                    <button type="submit" class="btn-shop" data-i18n="verify_code">Verify Code</button>
+                </form>
+            </div>
+
+            <!-- Reset Password Form -->
+            <div id="reset-password-form" style="display: none;">
+                <h2 data-i18n="new_password_title">New Password</h2>
+                <form onsubmit="handleResetPassword(event)">
+                    <input type="password" id="new-password" placeholder="New Password" required>
+                    <button type="submit" class="btn-shop" data-i18n="reset_password_btn">Reset Password</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
     <script src="main.js"></script>
 </body>
 
