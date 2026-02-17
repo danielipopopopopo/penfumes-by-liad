@@ -201,9 +201,8 @@ body {
     text-align: center;
     margin-bottom: 3rem;
     position: relative;
-    display: inline-block;
-    left: 50%;
-    transform: translateX(-50%);
+    display: block;
+    width: 100%;
 }
 
 .section-title::after {
@@ -346,7 +345,11 @@ body {
 /* RTL Support */
 body.rtl {
     direction: rtl;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Heebo', 'Montserrat', sans-serif;
+}
+
+body.rtl .section-title {
+    font-family: 'Heebo', var(--font-heading);
 }
 
 /* Remove row-reverse to let native RTL work (Start=Right, End=Left) */
