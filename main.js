@@ -1,7 +1,10 @@
 let translations = {};
 let currentLang = 'he';
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+let resetEmail = null;
 
-const loadProjectData = async () => {
+/* Data Loading */
+async function loadProjectData() {
     try {
         const [transRes, usersRes] = await Promise.all([
             fetch('translations.json'),
@@ -25,9 +28,9 @@ const loadProjectData = async () => {
     } catch (error) {
         console.error("Failed to load project data:", error);
     }
-};
+}
 
-const updateLanguage = () => {
+function updateLanguage() {
     if (!translations[currentLang]) return;
 
     const elements = document.querySelectorAll('[data-i18n]');
@@ -56,9 +59,9 @@ const updateLanguage = () => {
     }
 
     updateAuthUI();
-};
+}
 
-const navSlide = () => {
+function navSlide() {
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav-links');
     const navLinks = document.querySelectorAll('.nav-links li');
@@ -92,7 +95,7 @@ const navSlide = () => {
     if (langSwitchMobile) langSwitchMobile.addEventListener('click', toggleLang);
 }
 
-const scrollAnimations = () => {
+function scrollAnimations() {
     const observerOptions = {
         threshold: 0.2
     };
@@ -107,14 +110,13 @@ const scrollAnimations = () => {
 
     const animatedElements = document.querySelectorAll('.animate-on-scroll');
     animatedElements.forEach(el => observer.observe(el));
-};
+}
 
 /* Cart Logic */
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let isDelivery = false;
 
 /* EmailJS Initialization */
-// REPLACE THESE WITH YOUR ACTUAL KEYS FROM EMAILJS.COM
 const SERVICE_ID = 'service_6v0vq4l';
 const TEMPLATE_ID = 'template_09ohb2s';
 const PUBLIC_KEY = 'N-bB99u-x07A76Y7g';
@@ -123,17 +125,17 @@ const PUBLIC_KEY = 'N-bB99u-x07A76Y7g';
     emailjs.init(PUBLIC_KEY);
 })();
 
-const toggleCart = () => {
+function toggleCart() {
     document.getElementById('cart-sidebar').classList.toggle('active');
-};
+}
 
-const updateCartTotal = () => {
+function updateCartTotal() {
     const deliveryRadio = document.querySelector('input[name="delivery"]:checked');
     isDelivery = deliveryRadio ? deliveryRadio.value === 'shipping' : false;
     updateCartUI();
-};
+}
 
-const updateCartUI = () => {
+function updateCartUI() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartCount = document.querySelector('.cart-count');
     const cartTotal = document.getElementById('cart-total');
@@ -153,7 +155,7 @@ const updateCartUI = () => {
     // Render Items
     cartItemsContainer.innerHTML = '';
     if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p class="empty-cart-msg" data-i18n="empty_cart">${translations[currentLang].empty_cart}</p>`;
+        cartItemsContainer.innerHTML = `<p class="empty-cart-msg" data-i18n="empty_cart">${translations[currentLang].empty_cart || 'Your cart is empty'}</p>`;
     } else {
         cart.forEach((item, index) => {
             const displayName = translations[currentLang][item.nameKey] || item.name;
@@ -178,9 +180,9 @@ const updateCartUI = () => {
 
     // Save to LocalStorage
     localStorage.setItem('cart', JSON.stringify(cart));
-};
+}
 
-const addToCart = (nameKey, priceKey) => {
+function addToCart(nameKey, priceKey) {
     const name = translations[currentLang][nameKey];
     const price = translations[currentLang][priceKey];
 
@@ -188,15 +190,15 @@ const addToCart = (nameKey, priceKey) => {
     updateCartUI();
 
     document.getElementById('cart-sidebar').classList.add('active');
-};
+}
 
-const removeFromCart = (index) => {
+function removeFromCart(index) {
     cart.splice(index, 1);
     updateCartUI();
-};
+}
 
 /* PayPal Initialization */
-const initPayPal = () => {
+function initPayPal() {
     if (!window.paypal) return;
 
     paypal.Buttons({
@@ -207,7 +209,6 @@ const initPayPal = () => {
 
             if (total === 0) return actions.reject();
 
-            // Create items array for PayPal
             const paypalItems = cart.map(item => ({
                 name: item.name,
                 unit_amount: {
@@ -239,7 +240,6 @@ const initPayPal = () => {
         },
         onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
-                // Prepare Email Params
                 const shippingAddress = details.purchase_units[0].shipping.address;
                 const addressString = `${shippingAddress.address_line_1}, ${shippingAddress.admin_area_2}, ${shippingAddress.admin_area_1}, ${shippingAddress.postal_code}, ${shippingAddress.country_code}`;
 
@@ -258,7 +258,6 @@ const initPayPal = () => {
                     subtotal: subtotal
                 };
 
-                // Send Email
                 emailjs.send(SERVICE_ID, TEMPLATE_ID, emailParams)
                     .then(function (response) {
                         console.log('SUCCESS!', response.status, response.text);
@@ -268,7 +267,6 @@ const initPayPal = () => {
                         alert('Transaction completed, but email failed to send (Check Console).');
                     });
 
-                // Clear Cart
                 cart = [];
                 updateCartUI();
                 toggleCart();
@@ -279,17 +277,17 @@ const initPayPal = () => {
             alert('Something went wrong with the payment. Please try again.');
         }
     }).render('#paypal-button-container');
-};
+}
 
-const initializeApp = () => {
+function initializeApp() {
     updateLanguage();
     navSlide();
     scrollAnimations();
     updateCartUI();
     initPayPal();
 
-    // Attach Event Listeners to "Add to Cart" Buttons
-    const addBtns = document.querySelectorAll('.btn-shop');
+    // Attach Event Listeners specifically to Product "Add to Cart" Buttons
+    const addBtns = document.querySelectorAll('.product-card .btn-shop');
     const products = [
         { name: 'prod_1_name', price: 'prod_1_price' },
         { name: 'prod_2_name', price: 'prod_2_price' },
@@ -297,19 +295,16 @@ const initializeApp = () => {
     ];
 
     addBtns.forEach((btn, index) => {
-        btn.onclick = () => addToCart(products[index].name, products[index].price);
+        if (products[index]) {
+            btn.onclick = () => addToCart(products[index].name, products[index].price);
+        }
     });
 
     initAuth();
-};
-
-document.addEventListener('DOMContentLoaded', loadProjectData);
+}
 
 /* Authentication Logic */
-let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-let resetEmail = null;
-
-const initAuth = () => {
+function initAuth() {
     const authLink = document.getElementById('auth-link');
     const authLinkMobile = document.getElementById('auth-link-mobile');
     const modal = document.getElementById('auth-modal');
@@ -339,9 +334,9 @@ const initAuth = () => {
 
     updateAuthUI();
     checkResetToken();
-};
+}
 
-const updateAuthUI = () => {
+function updateAuthUI() {
     const authLink = document.getElementById('auth-link');
     if (authLink) {
         if (currentUser) {
@@ -351,12 +346,12 @@ const updateAuthUI = () => {
             authLink.setAttribute('data-i18n', ''); // Disable i18n for dynamic text
         } else {
             authLink.setAttribute('data-i18n', 'login_signup');
-            authLink.innerText = translations[currentLang].login_signup;
+            authLink.innerText = translations[currentLang].login_signup || "Login / Sign Up";
         }
     }
-};
+}
 
-const showModal = (formId) => {
+function showModal(formId) {
     const modal = document.getElementById('auth-modal');
     const forms = ['login-form', 'signup-form', 'forgot-password-form', 'reset-password-form'];
 
@@ -370,23 +365,13 @@ const showModal = (formId) => {
     });
 
     modal.classList.add('active');
-};
+}
 
-const showLogin = () => showModal('login-form');
-const showSignUp = () => showModal('signup-form');
-const showForgotPassword = () => showModal('forgot-password-form');
+function showLogin() { showModal('login-form'); }
+function showSignUp() { showModal('signup-form'); }
+function showForgotPassword() { showModal('forgot-password-form'); }
 
-// Expose functions to global scope for HTML onsubmit/onclick attributes
-window.showLogin = showLogin;
-window.showSignUp = showSignUp;
-window.showForgotPassword = showForgotPassword;
-window.handleSignUp = (e) => handleSignUp(e);
-window.handleLogin = (e) => handleLogin(e);
-window.handleForgotPassword = (e) => handleForgotPassword(e);
-window.handleResetPassword = (e) => handleResetPassword(e);
-window.handleLogout = handleLogout;
-
-const handleSignUp = (e) => {
+function handleSignUp(e) {
     e.preventDefault();
     const name = document.getElementById('signup-name').value;
     const email = document.getElementById('signup-email').value.toLowerCase();
@@ -408,9 +393,9 @@ const handleSignUp = (e) => {
     document.getElementById('auth-modal').classList.remove('active');
     updateAuthUI();
     alert(currentLang === 'he' ? "נרשמת בהצלחה!" : "Signed up successfully!");
-};
+}
 
-const handleLogin = (e) => {
+function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value.toLowerCase();
     const password = document.getElementById('login-password').value;
@@ -426,15 +411,15 @@ const handleLogin = (e) => {
     } else {
         alert(currentLang === 'he' ? "אימייל או סיסמה שגויים" : "Invalid email or password");
     }
-};
+}
 
-const handleLogout = () => {
+function handleLogout() {
     currentUser = null;
     localStorage.removeItem('currentUser');
     updateAuthUI();
-};
+}
 
-const handleForgotPassword = (e) => {
+function handleForgotPassword(e) {
     e.preventDefault();
     const email = document.getElementById('forgot-email').value.toLowerCase();
     const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -445,11 +430,9 @@ const handleForgotPassword = (e) => {
         return;
     }
 
-    // Generate a unique token
     const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
     const resetLink = `${window.location.origin}${window.location.pathname}#reset_token=${token}`;
 
-    // Store token in localStorage with 1 hour expiry
     const resetData = {
         email: email,
         expiry: Date.now() + 3600000 // 1 hour
@@ -461,7 +444,6 @@ const handleForgotPassword = (e) => {
         link: resetLink
     };
 
-    // Use the Template ID for the new HTML email template
     emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
         .then(() => {
             alert(currentLang === 'he' ? "לינק לאיפוס סיסמה נשלח למייל שלך" : "Password reset link has been sent to your email.");
@@ -470,9 +452,9 @@ const handleForgotPassword = (e) => {
             console.error("FAILED to send Reset Link", error);
             alert("Failed to send link. Please try again later.");
         });
-};
+}
 
-const checkResetToken = () => {
+function checkResetToken() {
     const hash = window.location.hash;
     if (hash.includes('reset_token=')) {
         const token = hash.split('reset_token=')[1].split('&')[0];
@@ -480,10 +462,7 @@ const checkResetToken = () => {
 
         if (resetData && resetData.expiry > Date.now()) {
             resetEmail = resetData.email;
-            // Remove token immediately after use or keep it until actual reset?
-            // For better UX, we'll keep it until the button is clicked.
             showModal('reset-password-form');
-            // Clean up hash
             window.history.replaceState(null, null, window.location.pathname);
             localStorage.removeItem(`reset_${token}`);
         } else {
@@ -491,9 +470,9 @@ const checkResetToken = () => {
             window.history.replaceState(null, null, window.location.pathname);
         }
     }
-};
+}
 
-const handleResetPassword = (e) => {
+function handleResetPassword(e) {
     e.preventDefault();
     const newPassword = document.getElementById('new-password').value;
 
@@ -508,4 +487,20 @@ const handleResetPassword = (e) => {
         resetEmail = null;
         showLogin();
     }
-};
+}
+
+// Global scope exposure
+window.showLogin = showLogin;
+window.showSignUp = showSignUp;
+window.showForgotPassword = showForgotPassword;
+window.handleSignUp = handleSignUp;
+window.handleLogin = handleLogin;
+window.handleForgotPassword = handleForgotPassword;
+window.handleResetPassword = handleResetPassword;
+window.handleLogout = handleLogout;
+window.addToCart = addToCart;
+window.removeFromCart = removeFromCart;
+window.toggleCart = toggleCart;
+window.updateCartTotal = updateCartTotal;
+
+document.addEventListener('DOMContentLoaded', loadProjectData);
