@@ -271,7 +271,6 @@ export default function CheckoutModal({
                                             <PayPalButtons
                                                 style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
                                                 createOrder={(data, actions) => {
-                                                    console.log('Finalizing Order for:', total.toFixed(2), 'ILS');
                                                     return actions.order.create({
                                                         intent: "CAPTURE",
                                                         purchase_units: [
@@ -292,11 +291,9 @@ export default function CheckoutModal({
                                                     });
                                                 }}
                                                 onApprove={async (data, actions) => {
-                                                    console.log('Capture starting for:', data.orderID);
                                                     if (actions.order) {
                                                         try {
-                                                            const details = await actions.order.capture();
-                                                            console.log('Capture complete:', details);
+                                                            await actions.order.capture();
                                                             await handleApprove();
                                                         } catch (err: any) {
                                                             console.error('Capture FAILED:', err);
@@ -304,8 +301,7 @@ export default function CheckoutModal({
                                                         }
                                                     }
                                                 }}
-                                                onCancel={(data) => {
-                                                    console.log('User cancelled:', data);
+                                                onCancel={() => {
                                                     setError(lang === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
                                                 }}
                                                 onError={(err) => {
