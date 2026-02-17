@@ -37,7 +37,8 @@ export default function CheckoutModal({
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
-    const { isDelivery } = useCart();
+    const { deliveryType } = useCart();
+    const isDelivery = deliveryType !== 'pickup';
     const userEmail = currentUser?.email || guestEmail;
     const showEmailInput = !currentUser;
 
@@ -51,15 +52,17 @@ export default function CheckoutModal({
 
     const sendReceipt = async () => {
         if (!userEmail) return;
-        const addressStr = isDelivery
-            ? `\nDelivery Address: ${address.street} ${address.houseNum}, Floor ${address.floor}, Apt ${address.apt}`
-            : '\nSelf Pickup';
+
+        let deliveryStr = '';
+        if (deliveryType === 'pickup') deliveryStr = '\nSelf Pickup';
+        else if (deliveryType === 'ganei_tikva') deliveryStr = `\nLocal Delivery (Ganei Tikva): ${address.street} ${address.houseNum}, Floor ${address.floor}, Apt ${address.apt}`;
+        else deliveryStr = `\nHome Delivery: ${address.street} ${address.houseNum}, Floor ${address.floor}, Apt ${address.apt}`;
 
         try {
             await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 to_email: userEmail,
                 to_name: currentUser?.name || 'Guest',
-                message: `Thank you for your order (Total: ₪${total}). Items: ${cart.map(i => `${i.name} (${i.size}ml)`).join(', ')}${addressStr}`,
+                message: `Thank you for your order (Total: ₪${total}). Items: ${cart.map(i => `${i.name} (${i.size}ml)`).join(', ')}${deliveryStr}`,
                 link: window.location.origin
             }, PUBLIC_KEY);
         } catch (e: any) {

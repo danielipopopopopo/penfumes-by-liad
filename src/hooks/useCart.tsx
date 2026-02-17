@@ -10,15 +10,17 @@ interface CartItem {
     priceValue: number;
 }
 
+export type DeliveryType = 'pickup' | 'regular' | 'ganei_tikva';
+
 interface CartContextType {
     cart: CartItem[];
     isOpen: boolean;
-    isDelivery: boolean;
+    deliveryType: DeliveryType;
     total: number;
     addToCart: (nameKey: string, priceKey: string, size: number, priceValue: number, customPrice?: string) => void;
     removeFromCart: (index: number) => void;
     toggleCart: () => void;
-    setIsDelivery: (v: boolean) => void;
+    setDeliveryType: (type: DeliveryType) => void;
     getDisplayName: (item: CartItem) => string;
     getDisplayPrice: (item: CartItem) => string;
 }
@@ -32,7 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return stored ? JSON.parse(stored) : [];
     });
     const [isOpen, setIsOpen] = useState(false);
-    const [isDelivery, setIsDelivery] = useState(false);
+    const [deliveryType, setDeliveryType] = useState<DeliveryType>('pickup');
 
     const saveCart = (items: CartItem[]) => {
         setCart(items);
@@ -69,12 +71,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const getDisplayName = useCallback((item: CartItem) => t(item.nameKey) || item.name, [t]);
     const getDisplayPrice = useCallback((item: CartItem) => t(item.priceKey) || item.price, [t]);
 
-    const total = cart.reduce((acc, item) => acc + item.priceValue, 0) + (isDelivery ? 60 : 0);
+    const deliveryPrice = deliveryType === 'regular' ? 60 : (deliveryType === 'ganei_tikva' ? 7 : 0);
+    const total = cart.reduce((acc, item) => acc + item.priceValue, 0) + deliveryPrice;
 
     return (
         <CartContext.Provider value={{
-            cart, isOpen, isDelivery, total,
-            addToCart, removeFromCart, toggleCart, setIsDelivery,
+            cart, isOpen, deliveryType, total,
+            addToCart, removeFromCart, toggleCart, setDeliveryType,
             getDisplayName, getDisplayPrice,
         }}>
             {children}

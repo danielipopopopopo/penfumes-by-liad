@@ -7,8 +7,8 @@ import CheckoutModal from './CheckoutModal';
 export default function CartSidebar() {
     const { t } = useTranslations();
     const {
-        cart, isOpen, isDelivery, total,
-        removeFromCart, toggleCart, setIsDelivery,
+        cart, isOpen, deliveryType, total,
+        removeFromCart, toggleCart, setDeliveryType,
         getDisplayName, getDisplayPrice,
     } = useCart();
     const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -92,27 +92,40 @@ export default function CartSidebar() {
                             {/* Footer */}
                             <div className="p-6 border-t border-[var(--color-border)]">
                                 {/* Delivery options */}
-                                <div className="flex gap-2 mb-4">
-                                    <label
-                                        className={`flex-1 flex items-center gap-2 p-3 border rounded-[10px] cursor-pointer text-xs transition-all duration-200
-                      ${!isDelivery
-                                                ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
-                                                : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
-                                            }`}
-                                    >
-                                        <input type="radio" name="delivery" checked={!isDelivery} onChange={() => setIsDelivery(false)} className="hidden" />
-                                        <span>{t('pickup')}</span>
-                                    </label>
-                                    <label
-                                        className={`flex-1 flex items-center gap-2 p-3 border rounded-[10px] cursor-pointer text-xs transition-all duration-200
-                      ${isDelivery
-                                                ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
-                                                : 'border-[var(--color-border)] text-[var(--color-text-secondary)]'
-                                            }`}
-                                    >
-                                        <input type="radio" name="delivery" checked={isDelivery} onChange={() => setIsDelivery(true)} className="hidden" />
-                                        <span>{t('shipping')}</span>
-                                    </label>
+                                <div className="flex flex-col gap-2 mb-4">
+                                    <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">{t('delivery_label')}</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <label
+                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                                ${deliveryType === 'pickup'
+                                                    ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
+                                                    : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
+                                                }`}
+                                        >
+                                            <input type="radio" name="delivery" checked={deliveryType === 'pickup'} onChange={() => setDeliveryType('pickup')} className="hidden" />
+                                            <span>{t('pickup')}</span>
+                                        </label>
+                                        <label
+                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                                ${deliveryType === 'ganei_tikva'
+                                                    ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
+                                                    : 'border(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
+                                                }`}
+                                        >
+                                            <input type="radio" name="delivery" checked={deliveryType === 'ganei_tikva'} onChange={() => setDeliveryType('ganei_tikva')} className="hidden" />
+                                            <span>{t('ganei_tikva')}</span>
+                                        </label>
+                                        <label
+                                            className={`flex-1 min-w-[120px] flex items-center justify-center p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200 text-center
+                                                ${deliveryType === 'regular'
+                                                    ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
+                                                    : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
+                                                }`}
+                                        >
+                                            <input type="radio" name="delivery" checked={deliveryType === 'regular'} onChange={() => setDeliveryType('regular')} className="hidden" />
+                                            <span>{t('shipping')}</span>
+                                        </label>
+                                    </div>
                                 </div>
 
                                 {/* Total */}
