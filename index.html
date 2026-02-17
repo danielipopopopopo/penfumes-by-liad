@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="logo.jpg" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo.jpg">
+    <script src="main.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Penfumes by Liad - Luxury Fragrances</title>
+</head>
+
+<body>
+    <header class="luxury-header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">Penfumes</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" data-i18n="home">Home</a></li>
+                <li><a href="#collection" data-i18n="collection">Store</a></li>
+                <li><a href="#about" data-i18n="about">About Us</a></li>
+                <li><a href="#contact" data-i18n="contact">Contact</a></li>
+                <li class="desktop-only"><a href="#" class="lang-switch-link" id="lang-switch-desktop">HE</a></li>
+            </ul>
+            <div class="nav-icons">
+                <div class="lang-toggle mobile-only" id="lang-switch-mobile">HE</div>
+                <div class="cart-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="burger">
+                    <div class="line1"></div>
+                    <div class="line2"></div>
+                    <div class="line3"></div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2 data-i18n="cart_title">Your Cart</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Items will be injected here -->
+            <p class="empty-cart-msg" data-i18n="empty_cart">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="total-price">
+                <span data-i18n="total">Total:</span>
+                <span id="cart-total">₪0</span>
+            </div>
+            <button class="checkout-btn" data-i18n="checkout">Checkout</button>
+        </div>
+    </div>
+
+    <section id="home" class="hero">
+        <h1 class="hero-title" data-i18n="hero_title">penfumes by liad</h1>
+    </section>
+
+    <section id="collection" class="shop-section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="collection_title">Exclusive Collection</h2>
+            <div class="product-grid">
+                <!-- Product 1 -->
+                <div class="product-card animate-on-scroll">
+                    <div class="product-image">
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="product-info">
+                        <h3 data-i18n="prod_1_name">Midnight Rose</h3>
+                        <p data-i18n="prod_1_desc">A bold blend of dark rose and oud.</p>
+                        <span class="price" data-i18n="prod_1_price">₪250</span>
+                        <button class="btn-shop" data-i18n="add_to_cart">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="product-card animate-on-scroll delay-200">
+                    <div class="product-image">
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="product-info">
+                        <h3 data-i18n="prod_2_name">Golden Amber</h3>
+                        <p data-i18n="prod_2_desc">Warm amber with hints of vanilla.</p>
+                        <span class="price" data-i18n="prod_2_price">₪280</span>
+                        <button class="btn-shop" data-i18n="add_to_cart">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="product-card animate-on-scroll delay-200">
+                    <div class="product-image">
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="product-info">
+                        <h3 data-i18n="prod_3_name">Ocean Mist</h3>
+                        <p data-i18n="prod_3_desc">Fresh aquatic notes with citrus.</p>
+                        <span class="price" data-i18n="prod_3_price">₪220</span>
+                        <button class="btn-shop" data-i18n="add_to_cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="about_title">About Us</h2>
+            <div class="about-content">
+                <div class="about-text animate-on-scroll">
+                    <p data-i18n="about_text_1">Welcome to <strong>Penfumes by Liad</strong>, where artistry meets aroma
+                        in a symphony of scents.
+                        Our journey began with a passion for crafting fragrances that are not just perfumes, but
+                        memories bottled in elegance.</p>
+                    <p data-i18n="about_text_2">Each scent is meticulously curated using the finest ingredients from
+                        around the world, designed
+                        to evoke emotion and sophistication. Whether you seek a bold statement or a subtle whisper of
+                        grace, our collection promises to elevate your presence.</p>
+                </div>
+                <div class="about-image animate-on-scroll delay-200">
+                    <!-- Placeholder for About Us Image -->
+                    <div class="image-placeholder"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
