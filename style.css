@@ -705,6 +705,42 @@ body.rtl .remove-item {
     accent-color: var(--gold);
 }
 
+/* Footer Styles */
+.luxury-footer {
+    background-color: #050505;
+    padding: 3rem 5%;
+    border-top: 1px solid var(--gold);
+    text-align: center;
+    color: var(--white);
+    margin-top: 5rem;
+}
+
+.footer-logo {
+    font-family: var(--font-heading);
+    color: var(--gold);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.footer-links {
+    margin-top: 2rem;
+}
+
+.footer-links a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.footer-links a:hover {
+    color: var(--gold);
+}
+
 @media screen and (max-width: 400px) {
     .cart-sidebar {
         width: 100%;
