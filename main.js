@@ -42,11 +42,8 @@ const translations = {
         signup_btn: "Sign Up",
         have_account: "Already have an account? Login",
         forgot_password_title: "Reset Password",
-        enter_email_otp: "Enter your email to receive a ONE TIME verification code.",
-        send_code: "Send Code",
-        otp_title: "Enter Code",
-        code_sent_msg: "A 6-digit code has been sent to your email.",
-        verify_code: "Verify Code",
+        enter_email_otp: "Enter your email to receive a password reset link.",
+        send_code: "Send Link",
         new_password_title: "New Password",
         reset_password_btn: "Reset Password",
         logout: "Logout",
@@ -95,11 +92,8 @@ const translations = {
         signup_btn: "הרשם",
         have_account: "כבר יש לך חשבון? התחבר",
         forgot_password_title: "איפוס סיסמה",
-        enter_email_otp: "הזן את המייל שלך לקבלת קוד אימות חד פעמי.",
-        send_code: "שלח קוד",
-        otp_title: "הזן קוד",
-        code_sent_msg: "קוד בן 6 ספרות נשלח למייל שלך.",
-        verify_code: "אמת קוד",
+        enter_email_otp: "הזן את המייל שלך לקבלת קישור לאיפוס סיסמה.",
+        send_code: "שלח קישור",
         new_password_title: "סיסמה חדשה",
         reset_password_btn: "אפס סיסמה",
         logout: "התנתק",
@@ -382,7 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* Authentication Logic */
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-let generatedOTP = null;
 let resetEmail = null;
 
 const initAuth = () => {
@@ -414,6 +407,7 @@ const initAuth = () => {
     };
 
     updateAuthUI();
+    checkResetToken();
 };
 
 const updateAuthUI = () => {
@@ -505,35 +499,51 @@ const handleForgotPassword = (e) => {
         return;
     }
 
-    resetEmail = email;
-    generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate a unique token
+    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const resetLink = `${window.location.origin}${window.location.pathname}#reset_token=${token}`;
 
-    // Use EmailJS to send OTP
-    // NOTE: User must have a template that accepts {{otp_code}} and {{to_email}}
+    // Store token in localStorage with 1 hour expiry
+    const resetData = {
+        email: email,
+        expiry: Date.now() + 3600000 // 1 hour
+    };
+    localStorage.setItem(`reset_${token}`, JSON.stringify(resetData));
+
     const templateParams = {
-        to_email: email,
-        otp_code: generatedOTP
+        email: email,
+        link: resetLink
     };
 
-    // REPLACE 'template_otp_placeholder' with the actual Template ID for OTP
+    // Use the Template ID for the new HTML email template
     emailjs.send(SERVICE_ID, 'template_v0a7hth', templateParams)
         .then(() => {
-            console.log("OTP Sent:", generatedOTP); // For debugging
-            showModal('otp-form');
+            alert(currentLang === 'he' ? "לינק לאיפוס סיסמה נשלח למייל שלך" : "Password reset link has been sent to your email.");
+            document.getElementById('auth-modal').classList.remove('active');
         }, (error) => {
-            console.error("FAILED to send OTP", error);
-            alert("Failed to send code. Please try again later.");
+            console.error("FAILED to send Reset Link", error);
+            alert("Failed to send link. Please try again later.");
         });
 };
 
-const handleVerifyOTP = (e) => {
-    e.preventDefault();
-    const inputOTP = document.getElementById('otp-input').value;
+const checkResetToken = () => {
+    const hash = window.location.hash;
+    if (hash.includes('reset_token=')) {
+        const token = hash.split('reset_token=')[1].split('&')[0];
+        const resetData = JSON.parse(localStorage.getItem(`reset_${token}`));
 
-    if (inputOTP === generatedOTP) {
-        showModal('reset-password-form');
-    } else {
-        alert(currentLang === 'he' ? "קוד שגוי" : "Invalid code");
+        if (resetData && resetData.expiry > Date.now()) {
+            resetEmail = resetData.email;
+            // Remove token immediately after use or keep it until actual reset?
+            // For better UX, we'll keep it until the button is clicked.
+            showModal('reset-password-form');
+            // Clean up hash
+            window.history.replaceState(null, null, window.location.pathname);
+            localStorage.removeItem(`reset_${token}`);
+        } else {
+            alert(currentLang === 'he' ? "הלינק פג תוקף או שאינו תקין" : "Reset link is invalid or expired.");
+            window.history.replaceState(null, null, window.location.pathname);
+        }
     }
 };
 
