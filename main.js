@@ -376,6 +376,16 @@ const showLogin = () => showModal('login-form');
 const showSignUp = () => showModal('signup-form');
 const showForgotPassword = () => showModal('forgot-password-form');
 
+// Expose functions to global scope for HTML onsubmit/onclick attributes
+window.showLogin = showLogin;
+window.showSignUp = showSignUp;
+window.showForgotPassword = showForgotPassword;
+window.handleSignUp = (e) => handleSignUp(e);
+window.handleLogin = (e) => handleLogin(e);
+window.handleForgotPassword = (e) => handleForgotPassword(e);
+window.handleResetPassword = (e) => handleResetPassword(e);
+window.handleLogout = handleLogout;
+
 const handleSignUp = (e) => {
     e.preventDefault();
     const name = document.getElementById('signup-name').value;
