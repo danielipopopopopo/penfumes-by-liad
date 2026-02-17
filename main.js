@@ -115,9 +115,9 @@ let isDelivery = false;
 
 /* EmailJS Initialization */
 // REPLACE THESE WITH YOUR ACTUAL KEYS FROM EMAILJS.COM
-const SERVICE_ID = "service_qnztk6h";
-const TEMPLATE_ID = "template_yv9btwr";
-const PUBLIC_KEY = "FXlsl4AhvCVg7uCeD";
+const SERVICE_ID = 'service_6v0vq4l';
+const TEMPLATE_ID = 'template_09ohb2s';
+const PUBLIC_KEY = 'N-bB99u-x07A76Y7g';
 
 (function () {
     emailjs.init(PUBLIC_KEY);
@@ -452,7 +452,7 @@ const handleForgotPassword = (e) => {
     };
 
     // Use the Template ID for the new HTML email template
-    emailjs.send(SERVICE_ID, 'template_09ohb2s', templateParams)
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
         .then(() => {
             alert(currentLang === 'he' ? "לינק לאיפוס סיסמה נשלח למייל שלך" : "Password reset link has been sent to your email.");
             document.getElementById('auth-modal').classList.remove('active');
