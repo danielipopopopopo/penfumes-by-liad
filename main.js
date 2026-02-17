@@ -34,17 +34,17 @@ const translations = {
     },
     he: {
         home: "בית",
-        collection: "חנות",
-        about: "אודותינו",
+        collection: "Shop",
+        about: "About Us",
         contact: "צור קשר",
-        hero_title: "בשמים של ליעד",
-        about_title: "עלינו",
+        hero_title: "penfumes by liad",
+        about_title: "About Us",
         about_text_1: "ברוכים הבאים ל<strong>Penfumes by Liad</strong>, המקום בו אמנות פוגשת ארומה בסימפוניה של ניחוחות. המסע שלנו התחיל עם תשוקה ליצירת ניחוחות שהם לא רק בשמים, אלא רגעים שנלכדו באלגנטיות.",
         about_text_2: "כל ניחוח נבחר בקפידה תוך שימוש במרכיבים המשובחים ביותר מרחבי העולם, ונועד לעורר רגש ותחכום. בין אם אתם מחפשים הצהרה נועזת או לחישה עדינה של חן, הקולקציה שלנו מבטיחה לשדרג את הנוכחות שלכם.",
         lang_btn: "EN",
 
         // Shop Translations
-        collection_title: "חנות",
+        collection_title: "Shop",
         prod_1_name: "ורד חצות",
         prod_1_desc: "שילוב נועז של ורד כהה ואוד.",
         prod_1_price: "₪250",
