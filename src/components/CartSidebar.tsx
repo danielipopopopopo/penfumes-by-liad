@@ -120,7 +120,7 @@ export default function CartSidebar() {
                                         <label
                                             className={`flex items-center justify-between p-3 border rounded-[10px] cursor-pointer text-[11px] transition-all duration-200
                                                 ${deliveryType === 'regular'
-                                                    ? 'border-[var(--color-gold)] text(--color-gold)] bg-[var(--color-gold-glow)]'
+                                                    ? 'border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold-glow)]'
                                                     : 'border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-white/20'
                                                 }`}
                                         >
@@ -134,7 +134,9 @@ export default function CartSidebar() {
                                 {/* Total */}
                                 <div className="flex justify-between items-center py-4">
                                     <span className="text-base">{t('total')}</span>
-                                    <span className="text-xl font-semibold text-[var(--color-gold)]">₪{total}</span>
+                                    <span className="text-xl font-semibold text-[var(--color-gold)]">
+                                        ₪{Number.isInteger(total) ? total : total.toFixed(2)}
+                                    </span>
                                 </div>
 
                                 {/* Checkout button */}

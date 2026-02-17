@@ -224,7 +224,9 @@ export default function CheckoutModal({
                                 {/* Total */}
                                 <div className="flex justify-between items-center py-4 border-t border-white/10 border-b border-white/10">
                                     <span className="text-gray-400">{t('total')}</span>
-                                    <span className="text-2xl font-serif text-[#c9a96e]">₪{total}</span>
+                                    <span className="text-2xl font-serif text-[#c9a96e]">
+                                        ₪{Number.isInteger(total) ? total : total.toFixed(2)}
+                                    </span>
                                 </div>
 
                                 {/* Error Banner */}
@@ -271,7 +273,7 @@ export default function CheckoutModal({
                                                             {
                                                                 amount: {
                                                                     currency_code: "ILS",
-                                                                    value: total.toString(),
+                                                                    value: total.toFixed(2),
                                                                 },
                                                                 description: `Order for ${userEmail}`,
                                                             },

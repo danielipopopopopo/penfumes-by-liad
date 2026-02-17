@@ -11,6 +11,7 @@ interface Product {
 }
 
 const products: Product[] = [
+    { nameKey: 'prod_test_name', descKey: 'prod_test_desc', priceKey: 'prod_test_price', image: '', prices: { 5: 0.10 } },
     { nameKey: 'prod_19_name', descKey: 'prod_19_desc', priceKey: 'prod_19_price', image: '', prices: { 2: 30, 3: 35, 4: 45, 5: 50 } },
     { nameKey: 'prod_17_name', descKey: 'prod_17_desc', priceKey: 'prod_17_price', image: '/products/img_18.jpg', prices: { 2: 10, 3: 15, 4: 20, 5: 25 } },
     { nameKey: 'prod_16_name', descKey: 'prod_16_desc', priceKey: 'prod_16_price', image: '/products/img_17.jpg', prices: { 2: 15, 3: 20, 4: 30, 5: 35 } },
