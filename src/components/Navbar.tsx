@@ -32,8 +32,8 @@ export default function Navbar() {
             transition={{ type: 'spring', stiffness: 80, damping: 20 }}
         >
             <nav className="max-w-[1200px] mx-auto px-6 h-[72px] flex items-center justify-between">
-                <a href="#" className="font-[var(--font-display)] text-2xl font-medium tracking-wide text-[var(--color-gold)] hover:opacity-80 transition-opacity duration-200">
-                    Penfumes
+                <a href="#" className="flex items-center hover:opacity-80 transition-opacity duration-200">
+                    <img src="/logo.jpg" alt="Penfumes" className="h-12 w-auto object-contain rounded-md" />
                 </a>
 
                 {/* Desktop Nav */}

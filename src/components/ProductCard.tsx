@@ -103,7 +103,7 @@ export default function ProductCard({ nameKey, descKey, priceKey, image, index }
                             const finalPrice = Math.round(basePrice * multiplier);
                             const priceString = `₪${finalPrice} (${selectedSize}${t('ml')})`;
 
-                            addToCart(nameKey, priceKey, selectedSize, priceString);
+                            addToCart(nameKey, priceKey, selectedSize, finalPrice, priceString);
                         }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.92 }}

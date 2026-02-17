@@ -7,6 +7,7 @@ interface CartItem {
     name: string;
     price: string;
     size: number;
+    priceValue: number;
 }
 
 interface CartContextType {
@@ -14,7 +15,7 @@ interface CartContextType {
     isOpen: boolean;
     isDelivery: boolean;
     total: number;
-    addToCart: (nameKey: string, priceKey: string, size: number, customPrice?: string) => void;
+    addToCart: (nameKey: string, priceKey: string, size: number, priceValue: number, customPrice?: string) => void;
     removeFromCart: (index: number) => void;
     toggleCart: () => void;
     setIsDelivery: (v: boolean) => void;
@@ -38,13 +39,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('cart', JSON.stringify(items));
     };
 
-    const addToCart = useCallback((nameKey: string, priceKey: string, size: number, customPrice?: string) => {
+    const addToCart = useCallback((nameKey: string, priceKey: string, size: number, priceValue: number, customPrice?: string) => {
         const item: CartItem = {
             nameKey,
             priceKey,
             name: t(nameKey),
             price: customPrice || t(priceKey),
             size,
+            priceValue,
         };
         setCart(prev => {
             const next = [...prev, item];
@@ -67,11 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const getDisplayName = useCallback((item: CartItem) => t(item.nameKey) || item.name, [t]);
     const getDisplayPrice = useCallback((item: CartItem) => t(item.priceKey) || item.price, [t]);
 
-    const total = cart.reduce((acc, item) => {
-        const priceStr = t(item.priceKey) || item.price;
-        // Basic integer extraction, ignoring size for now as priceKey might already include it or we wait for logic
-        return acc + parseInt(priceStr.replace(/[^\d]/g, '') || '0');
-    }, 0) + (isDelivery ? 60 : 0);
+    const total = cart.reduce((acc, item) => acc + item.priceValue, 0) + (isDelivery ? 60 : 0);
 
     return (
         <CartContext.Provider value={{

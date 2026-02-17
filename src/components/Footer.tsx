@@ -13,7 +13,7 @@ export default function Footer() {
             transition={{ duration: 0.8 }}
         >
             <div className="max-w-[1200px] mx-auto px-6 flex flex-col items-center gap-4 text-center">
-                <span className="font-[var(--font-display)] text-xl text-[var(--color-gold)] tracking-wide">Penfumes</span>
+                <img src="/logo.jpg" alt="Penfumes" className="h-14 w-auto object-contain rounded-md" />
                 <p className="text-xs text-[var(--color-text-tertiary)]" dangerouslySetInnerHTML={{ __html: t('footer_copy') }} />
                 <a
                     href="https://github.com/danielipopopopopo/penfumes-by-liad"
