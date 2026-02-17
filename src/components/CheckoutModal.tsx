@@ -240,7 +240,7 @@ export default function CheckoutModal({
                                 <PayPalScriptProvider options={{
                                     clientId: PAYPAL_CLIENT_ID,
                                     currency: "ILS",
-                                    intent: "CAPTURE"
+                                    intent: "capture"
                                 }}>
                                     {!method ? (
                                         <div className="space-y-3">
