@@ -27,14 +27,17 @@ const translations = {
         cart_title: "Your Cart",
         empty_cart: "Your cart is empty.",
         total: "Total:",
-        checkout: "Checkout"
+        checkout: "Checkout",
+        pickup: "Self Pickup (Free)",
+        shipping: "Delivery (+₪60)",
+        footer_copy: "&copy; 2026 Penfumes by Liad. All Rights Reserved."
     },
     he: {
         home: "בית",
         collection: "חנות",
         about: "אודותינו",
         contact: "צור קשר",
-        hero_title: "penfumes by liad",
+        hero_title: "בשמים של ליעד",
         about_title: "אודותינו",
         about_text_1: "ברוכים הבאים ל<strong>Penfumes by Liad</strong>, המקום בו אמנות פוגשת ארומה בסימפוניה של ניחוחות. המסע שלנו התחיל עם תשוקה ליצירת ניחוחות שהם לא רק בשמים, אלא רגעים שנלכדו באלגנטיות.",
         about_text_2: "כל ניחוח נבחר בקפידה תוך שימוש במרכיבים המשובחים ביותר מרחבי העולם, ונועד לעורר רגש ותחכום. בין אם אתם מחפשים הצהרה נועזת או לחישה עדינה של חן, הקולקציה שלנו מבטיחה לשדרג את הנוכחות שלכם.",
@@ -57,7 +60,10 @@ const translations = {
         cart_title: "העגלה שלך",
         empty_cart: "העגלה שלך ריקה.",
         total: "סה\"כ:",
-        checkout: "לקופה"
+        checkout: "לקופה",
+        pickup: "איסוף עצמי (חינם)",
+        shipping: "משלוח (+₪60)",
+        footer_copy: "&copy; 2026 Penfumes by Liad. כל הזכויות שמורות."
     }
 };
 
@@ -171,7 +177,10 @@ const updateCartUI = () => {
     cartCount.innerText = cart.length;
 
     // Calculate Total
-    let subtotal = cart.reduce((acc, item) => acc + parseInt(item.price.replace(/[^\d]/g, '')), 0);
+    let subtotal = cart.reduce((acc, item) => {
+        const priceStr = translations[currentLang][item.priceKey] || item.price;
+        return acc + parseInt(priceStr.replace(/[^\d]/g, ''));
+    }, 0);
     let total = isDelivery ? subtotal + 60 : subtotal;
 
     cartTotal.innerText = `₪${total}`;
@@ -182,6 +191,8 @@ const updateCartUI = () => {
         cartItemsContainer.innerHTML = `<p class="empty-cart-msg" data-i18n="empty_cart">${translations[currentLang].empty_cart}</p>`;
     } else {
         cart.forEach((item, index) => {
+            const displayName = translations[currentLang][item.nameKey] || item.name;
+            const displayPrice = translations[currentLang][item.priceKey] || item.price;
             const itemHTML = `
                 <div class="cart-item">
                     <div style="display:flex; align-items:center;">
@@ -189,8 +200,8 @@ const updateCartUI = () => {
                             <i class="fas fa-wine-bottle"></i>
                         </div>
                         <div class="cart-item-details">
-                            <h4>${item.name}</h4>
-                            <span>${item.price}</span>
+                            <h4>${displayName}</h4>
+                            <span>${displayPrice}</span>
                         </div>
                     </div>
                     <i class="fas fa-trash-alt remove-item" onclick="removeFromCart(${index})"></i>
