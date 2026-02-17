@@ -516,7 +516,7 @@ const handleForgotPassword = (e) => {
     };
 
     // Use the Template ID for the new HTML email template
-    emailjs.send(SERVICE_ID, 'template_v0a7hth', templateParams)
+    emailjs.send(SERVICE_ID, 'template_09ohb2s', templateParams)
         .then(() => {
             alert(currentLang === 'he' ? "לינק לאיפוס סיסמה נשלח למייל שלך" : "Password reset link has been sent to your email.");
             document.getElementById('auth-modal').classList.remove('active');
