@@ -263,10 +263,15 @@ export default function CheckoutModal({
                                     </div>
                                 ) : (
                                     <div className="w-full relative z-10">
-                                        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "ILS" }}>
+                                        <PayPalScriptProvider options={{
+                                            clientId: PAYPAL_CLIENT_ID,
+                                            currency: "ILS",
+                                            intent: "capture"
+                                        }}>
                                             <PayPalButtons
                                                 style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
                                                 createOrder={(data, actions) => {
+                                                    console.log('Creating PayPal order for total:', total.toFixed(2));
                                                     return actions.order.create({
                                                         intent: "CAPTURE",
                                                         purchase_units: [
@@ -275,20 +280,31 @@ export default function CheckoutModal({
                                                                     currency_code: "ILS",
                                                                     value: total.toFixed(2),
                                                                 },
-                                                                description: `Order for ${userEmail}`,
+                                                                description: `Order for ${userEmail || 'Guest'}`,
                                                             },
                                                         ],
                                                     });
                                                 }}
                                                 onApprove={async (data, actions) => {
+                                                    console.log('PayPal payment approved, capturing...', data);
                                                     if (actions.order) {
-                                                        await actions.order.capture();
+                                                        const details = await actions.order.capture();
+                                                        console.log('Payment captured successfully:', details);
                                                         await handleApprove();
                                                     }
                                                 }}
+                                                onCancel={(data) => {
+                                                    console.log('PayPal payment cancelled:', data);
+                                                    setError(lang === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
+                                                }}
                                                 onError={(err) => {
-                                                    console.error('PayPal Error:', err);
-                                                    setError('Payment failed. Please try again.');
+                                                    console.error('PayPal Terminal Error:', err);
+                                                    const errMsg = err?.toString() || 'Unknown error';
+                                                    setError(lang === 'he'
+                                                        ? `שגיאת פייפאל: ${errMsg}. וודא שהמזהה (Client ID) תקין ושהחשבון מוגדר לקבל שקלים.`
+                                                        : `PayPal Error: ${errMsg}. Ensure Client ID is correct and account can receive ILS.`
+                                                    );
+                                                    alert(`PayPal Error Details: ${errMsg}`);
                                                 }}
                                             />
                                         </PayPalScriptProvider>
