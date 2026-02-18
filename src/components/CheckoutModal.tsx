@@ -22,18 +22,11 @@ export default function CheckoutModal({
     onClose: () => void;
 }) {
     const { t, lang } = useTranslations();
-    const { cart, total } = useCart();
+    const { cart, total, address, setAddress } = useCart();
     const { currentUser } = useAuth();
 
     const [method, setMethod] = useState<PaymentMethod>(null);
     const [guestEmail, setGuestEmail] = useState('');
-    const [address, setAddress] = useState({
-        city: '',
-        street: '',
-        houseNum: '',
-        floor: '',
-        apt: ''
-    });
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
@@ -46,7 +39,6 @@ export default function CheckoutModal({
         setMethod(null);
         setSuccess(false);
         setError('');
-        setAddress({ city: '', street: '', houseNum: '', floor: '', apt: '' });
         onClose();
     };
 

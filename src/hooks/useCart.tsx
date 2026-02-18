@@ -12,15 +12,25 @@ interface CartItem {
 
 export type DeliveryType = 'pickup' | 'regular' | 'ganei_tikva';
 
+export interface Address {
+    city: string;
+    street: string;
+    houseNum: string;
+    floor: string;
+    apt: string;
+}
+
 interface CartContextType {
     cart: CartItem[];
     isOpen: boolean;
     deliveryType: DeliveryType;
     total: number;
+    address: Address;
     addToCart: (nameKey: string, priceKey: string, size: number, priceValue: number, customPrice?: string) => void;
     removeFromCart: (index: number) => void;
     toggleCart: () => void;
     setDeliveryType: (type: DeliveryType) => void;
+    setAddress: (addr: Address) => void;
     getDisplayName: (item: CartItem) => string;
     getDisplayPrice: (item: CartItem) => string;
 }
@@ -34,7 +44,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return stored ? JSON.parse(stored) : [];
     });
     const [isOpen, setIsOpen] = useState(false);
-    const [deliveryType, setDeliveryType] = useState<DeliveryType>('pickup');
+    const [deliveryType, setDeliveryType] = useState<DeliveryType>(() => {
+        const stored = localStorage.getItem('deliveryType');
+        return (stored as DeliveryType) || 'pickup';
+    });
+    const [address, setAddressState] = useState<Address>(() => {
+        const stored = localStorage.getItem('address');
+        return stored ? JSON.parse(stored) : { city: '', street: '', houseNum: '', floor: '', apt: '' };
+    });
+
+    const setAddress = (addr: Address) => {
+        setAddressState(addr);
+        localStorage.setItem('address', JSON.stringify(addr));
+    };
+
+    const updateDeliveryType = (type: DeliveryType) => {
+        setDeliveryType(type);
+        localStorage.setItem('deliveryType', type);
+    };
 
     const saveCart = (items: CartItem[]) => {
         setCart(items);
@@ -76,8 +103,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     return (
         <CartContext.Provider value={{
-            cart, isOpen, deliveryType, total,
-            addToCart, removeFromCart, toggleCart, setDeliveryType,
+            cart, isOpen, deliveryType, total, address,
+            addToCart, removeFromCart, toggleCart, setDeliveryType: updateDeliveryType, setAddress,
             getDisplayName, getDisplayPrice,
         }}>
             {children}

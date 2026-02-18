@@ -5,6 +5,7 @@ import About from './components/About'
 import Footer from './components/Footer'
 import CartSidebar from './components/CartSidebar'
 import AuthModal from './components/AuthModal'
+import DemoInitializer from './components/DemoInitializer'
 
 export default function App() {
     return (
@@ -18,6 +19,7 @@ export default function App() {
             <Footer />
             <CartSidebar />
             <AuthModal />
+            <DemoInitializer />
         </>
     )
 }
