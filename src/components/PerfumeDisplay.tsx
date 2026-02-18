@@ -27,6 +27,10 @@ export default function PerfumeDisplay() {
                     aria-hidden="true"
                 />
 
+                {/* Side Blur Overlays */}
+                <div className="absolute inset-y-0 left-0 w-1/3 z-10 backdrop-blur-sm [mask-image:linear-gradient(to_right,black_0%,transparent_100%)] pointer-events-none" aria-hidden="true" />
+                <div className="absolute inset-y-0 right-0 w-1/3 z-10 backdrop-blur-sm [mask-image:linear-gradient(to_left,black_0%,transparent_100%)] pointer-events-none" aria-hidden="true" />
+
                 {/* The main render */}
                 <img
                     src="/premium_perfume_bottle_final_render.png"
