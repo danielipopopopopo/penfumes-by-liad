@@ -7,7 +7,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 
 // Constants (Store these in .env in production)
-const PAYPAL_CLIENT_ID = "ASZPZMqHFlMuFc_9Z5eE3Pb1HTrIXElmpLhYkVSQsh9eGXgXllsYIzqCwwNr9uo1sgIij43zc20ZKIkP"; // 'sb' or your sandbox client ID
+const PAYPAL_CLIENT_ID = "AeiuDIaHLRE4sB0XE_CQfBoz8SqnuLoj41T_I3y6hJ9EnFgLTUMxy2AfONYmhaxpq9bmI4KLXnpMN4aM";
 const SERVICE_ID = 'service_alfkne7'; // Updated from user screenshot
 const TEMPLATE_ID = 'template_ltw4ucg';
 const PUBLIC_KEY = 'RsBqeWkJoWzzc4z0j';
