@@ -99,7 +99,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const getDisplayPrice = useCallback((item: CartItem) => t(item.priceKey) || item.price, [t]);
 
     const deliveryPrice = deliveryType === 'regular' ? 60 : (deliveryType === 'ganei_tikva' ? 7 : 0);
-    const total = cart.reduce((acc, item) => acc + item.priceValue, 0) + deliveryPrice;
+    const total = cart.reduce((acc, item) => acc + (item.priceValue || 0), 0) + deliveryPrice;
 
     return (
         <CartContext.Provider value={{

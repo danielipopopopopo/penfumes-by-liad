@@ -53,7 +53,7 @@ export default function AuthModal() {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
         const err = login(form.get('email') as string, form.get('password') as string);
-        if (err) setError(lang === 'he' ? 'אימייל או סיסמה שגויים' : 'Invalid email or password');
+        if (err) setError(t('invalid_login_err'));
         else close();
     };
 
@@ -61,7 +61,7 @@ export default function AuthModal() {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
         const err = signup(form.get('name') as string, form.get('email') as string, form.get('password') as string);
-        if (err === 'email_exists') setError(lang === 'he' ? 'האימייל כבר קיים במערכת' : 'Email already exists');
+        if (err === 'email_exists') setError(t('email_exists_err'));
         else close();
     };
 
@@ -71,17 +71,17 @@ export default function AuthModal() {
         const form = new FormData(e.currentTarget);
         const err = await forgotPassword(form.get('email') as string);
         setLoading(false);
-        if (err === 'email_not_found') setError(lang === 'he' ? 'אימייל לא נמצא' : 'Email not found');
-        else if (err === 'send_failed') setError('Failed to send. Try again.');
-        else { alert(lang === 'he' ? 'לינק לאיפוס סיסמה נשלח למייל שלך' : 'Reset link sent!'); close(); }
+        if (err === 'email_not_found') setError(t('email_not_found_err'));
+        else if (err === 'send_failed') setError(t('unexpected_err'));
+        else { alert(t('send_link')); close(); }
     };
 
     const handleReset = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
         const err = resetPassword(form.get('password') as string);
-        if (err) setError('Something went wrong.');
-        else { alert(lang === 'he' ? 'הסיסמה שונתה בהצלחה!' : 'Password reset!'); switchView('login'); }
+        if (err) setError(t('unexpected_err'));
+        else { alert(t('new_password_title')); switchView('login'); }
     };
 
     const handleOTPSend = async (e: FormEvent<HTMLFormElement>) => {
@@ -143,8 +143,8 @@ export default function AuthModal() {
                         {view === 'login' && (
                             <form onSubmit={handleLogin}>
                                 <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-6">{t('login_title')}</h2>
-                                <input name="email" type="email" placeholder="Email" required className={inputClass} />
-                                <input name="password" type="password" placeholder="Password" required className={inputClass} />
+                                <input name="email" type="email" placeholder={t('email_placeholder')} required className={inputClass} />
+                                <input name="password" type="password" placeholder={t('password_placeholder')} required className={inputClass} />
                                 <motion.button type="submit" className={submitClass} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                     {t('login_btn')}
                                 </motion.button>
@@ -160,7 +160,7 @@ export default function AuthModal() {
                         {view === 'otp_send' && (
                             <form onSubmit={handleOTPSend}>
                                 <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-6">{t('login_otp_btn')}</h2>
-                                <input name="email" type="email" placeholder="Email" required className={inputClass} />
+                                <input name="email" type="email" placeholder={t('email_placeholder')} required className={inputClass} />
                                 <motion.button type="submit" className={submitClass} disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                     {loading ? '...' : t('send_link')}
                                 </motion.button>
@@ -170,36 +170,14 @@ export default function AuthModal() {
                             </form>
                         )}
 
-                        {view === 'otp_verify' && (
-                            <form onSubmit={handleOTPVerify}>
-                                <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-4">{t('otp_title')}</h2>
-                                <p className="text-sm text-[var(--color-text-secondary)] text-center mb-6">
-                                    {t('otp_msg')} <span className="text-[var(--color-text-primary)] font-medium">{otpEmail}</span>
-                                </p>
-                                <input
-                                    name="code"
-                                    type="text"
-                                    placeholder="000000"
-                                    maxLength={6}
-                                    required
-                                    className={`${inputClass} text-center text-2xl tracking-[0.5em] font-mono`}
-                                />
-                                <motion.button type="submit" className={submitClass} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                                    {t('verify_btn')}
-                                </motion.button>
-                                <div className="flex flex-col items-center gap-2 mt-6">
-                                    <button type="button" onClick={() => switchView('otp_send')} className={linkClass}>{t('resend_otp')}</button>
-                                    <button type="button" onClick={() => switchView('login')} className={linkClass}>{t('back_to_login')}</button>
-                                </div>
-                            </form>
-                        )}
+                        {/* Verify placeholder is fine (000000) */}
 
                         {view === 'signup' && (
                             <form onSubmit={handleSignup}>
                                 <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-6">{t('signup_title')}</h2>
-                                <input name="name" type="text" placeholder="Full Name" required className={inputClass} />
-                                <input name="email" type="email" placeholder="Email" required className={inputClass} />
-                                <input name="password" type="password" placeholder="Password" required className={inputClass} />
+                                <input name="name" type="text" placeholder={t('full_name_placeholder')} required className={inputClass} />
+                                <input name="email" type="email" placeholder={t('email_placeholder')} required className={inputClass} />
+                                <input name="password" type="password" placeholder={t('password_placeholder')} required className={inputClass} />
                                 <motion.button type="submit" className={submitClass} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                     {t('signup_btn')}
                                 </motion.button>
@@ -213,7 +191,7 @@ export default function AuthModal() {
                             <form onSubmit={handleForgot}>
                                 <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-4">{t('forgot_password_title')}</h2>
                                 <p className="text-sm text-[var(--color-text-secondary)] text-center mb-6">{t('enter_reset_link_msg')}</p>
-                                <input name="email" type="email" placeholder="Email" required className={inputClass} />
+                                <input name="email" type="email" placeholder={t('email_placeholder')} required className={inputClass} />
                                 <motion.button type="submit" className={submitClass} disabled={loading} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                     {loading ? '...' : t('send_link')}
                                 </motion.button>
@@ -226,7 +204,7 @@ export default function AuthModal() {
                         {view === 'reset' && (
                             <form onSubmit={handleReset}>
                                 <h2 className="font-[var(--font-display)] text-2xl font-normal text-center mb-6">{t('new_password_title')}</h2>
-                                <input name="password" type="password" placeholder="New Password" required className={inputClass} />
+                                <input name="password" type="password" placeholder={t('new_password_placeholder')} required className={inputClass} />
                                 <motion.button type="submit" className={submitClass} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                     {t('reset_password_btn')}
                                 </motion.button>

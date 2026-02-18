@@ -101,8 +101,8 @@ export default function CheckoutModal({
                         <div className="flex items-center justify-between p-6 border-b border-white/10">
                             <h2 className="font-serif text-xl text-white">
                                 {success
-                                    ? (lang === 'he' ? 'ההזמנה הושלמה!' : 'Order Confirmed!')
-                                    : (lang === 'he' ? 'קופה' : 'Checkout')
+                                    ? t('order_confirmed')
+                                    : t('checkout')
                                 }
                             </h2>
                             <button
@@ -124,18 +124,16 @@ export default function CheckoutModal({
                                     🎉
                                 </motion.div>
                                 <h3 className="text-xl text-[#c9a96e] mb-2 font-serif">
-                                    {lang === 'he' ? 'תודה על הזמנתך!' : 'Thank you for your order!'}
+                                    {t('thank_you_order')}
                                 </h3>
                                 <p className="text-gray-400 text-sm">
-                                    {lang === 'he'
-                                        ? `קבלה נשלחה לכתובת ${userEmail}`
-                                        : `A receipt has been sent to ${userEmail}`}
+                                    {t('receipt_sent_to')} {userEmail}
                                 </p>
                                 <button
                                     onClick={() => window.location.reload()}
                                     className="mt-6 px-6 py-2 bg-[#c9a96e] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
                                 >
-                                    {lang === 'he' ? 'חזרה לחנות' : 'Back to Store'}
+                                    {t('back_to_store')}
                                 </button>
                             </div>
                         ) : (
@@ -145,13 +143,13 @@ export default function CheckoutModal({
                                 {showEmailInput && (
                                     <div>
                                         <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2 font-semibold">
-                                            {lang === 'he' ? 'אימייל לקבלה' : 'Email for Receipt'}
+                                            {t('email_for_receipt')}
                                         </label>
                                         <input
                                             type="email"
                                             value={guestEmail}
                                             onChange={(e) => setGuestEmail(e.target.value)}
-                                            placeholder="name@example.com"
+                                            placeholder={t('email_placeholder')}
                                             className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#c9a96e] outline-none transition-colors"
                                             required
                                         />
@@ -246,28 +244,34 @@ export default function CheckoutModal({
                                             onClick={(data, actions) => {
                                                 // Validate before opening PayPal
                                                 if (showEmailInput && (!guestEmail || !guestEmail.includes('@'))) {
-                                                    setError(lang === 'he' ? 'נא להזין אימייל תקין' : 'Please enter a valid email');
+                                                    setError(t('invalid_login_err'));
                                                     return actions.reject();
                                                 }
                                                 if (isDelivery && (!address.city || !address.street || !address.houseNum)) {
-                                                    setError(lang === 'he' ? 'נא למלא כתובת (עיר, רחוב ומספר בית)' : 'Please fill city, street and house number');
+                                                    setError(t('address_error'));
                                                     return actions.reject();
                                                 }
                                                 setError('');
                                                 return actions.resolve();
                                             }}
                                             createOrder={(data, actions) => {
+                                                const totalValue = total || 0;
+                                                if (isNaN(totalValue) || totalValue <= 0) {
+                                                    console.error('PayPal createOrder failed: Total is NaN or zero');
+                                                    setError(t('invalid_total'));
+                                                    throw new Error('Invalid order total');
+                                                }
                                                 return actions.order.create({
                                                     intent: "CAPTURE",
                                                     purchase_units: [
                                                         {
                                                             amount: {
                                                                 currency_code: "ILS",
-                                                                value: total.toFixed(2),
+                                                                value: totalValue.toFixed(2),
                                                                 breakdown: {
                                                                     item_total: {
                                                                         currency_code: "ILS",
-                                                                        value: total.toFixed(2)
+                                                                        value: totalValue.toFixed(2)
                                                                     }
                                                                 }
                                                             },
@@ -287,31 +291,24 @@ export default function CheckoutModal({
                                                         } else {
                                                             // Handle cases where the payment was rejected or didn't complete
                                                             console.error('Payment not completed:', details);
-                                                            const errMsg = lang === 'he'
-                                                                ? 'התשלום לא הושלם. אנא בדוק את אמצעי התשלום שלך ונסה שוב.'
-                                                                : 'Payment not completed. Please check your payment method and try again.';
+                                                            const errMsg = t('payment_not_completed');
                                                             setError(errMsg);
                                                             alert(errMsg);
                                                         }
                                                     } catch (err: any) {
                                                         console.error('Capture FAILED:', err);
-                                                        const errMsg = lang === 'he'
-                                                            ? `שגיאה באישור התשלום: ${err.message}`
-                                                            : `Payment capture failed: ${err.message}`;
+                                                        const errMsg = `${t('payment_failed')}: ${err.message}`;
                                                         setError(errMsg);
                                                         alert(errMsg);
                                                     }
                                                 }
                                             }}
                                             onCancel={() => {
-                                                setError(lang === 'he' ? 'התשלום בוטל' : 'Payment cancelled');
+                                                setError(t('payment_cancelled'));
                                             }}
                                             onError={(err) => {
                                                 console.error('PayPal Error Event:', err);
-                                                setError(lang === 'he'
-                                                    ? `שגיאת פייפאל: הקוד או החשבון לא תקינים. וודא שהחשבון מוגדר ל-ILS ושה-Client ID נכון.`
-                                                    : `PayPal Error: Check Client ID and ILS currency support in your account.`
-                                                );
+                                                setError(t('paypal_error_msg'));
                                             }}
                                         />
                                     </div>

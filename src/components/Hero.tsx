@@ -23,7 +23,7 @@ export default function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.8 }}
                 >
-                    Luxury Fragrances
+                    {t('luxury_fragrances')}
                 </motion.p>
                 <motion.h1
                     className="font-[var(--font-display)] text-[clamp(3rem,10vw,7rem)] font-normal tracking-tight leading-none mb-8 hero-shimmer pointer-events-auto"
