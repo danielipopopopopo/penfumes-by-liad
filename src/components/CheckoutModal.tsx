@@ -43,7 +43,10 @@ export default function CheckoutModal({
     };
 
     const sendReceipt = async () => {
-        if (!userEmail) return;
+        if (!userEmail) {
+            console.error('No email provided for receipt');
+            return;
+        }
 
         let deliveryStr = '';
         if (deliveryType === 'pickup') deliveryStr = '\nSelf Pickup';
@@ -51,17 +54,20 @@ export default function CheckoutModal({
         else deliveryStr = `\nHome Delivery: ${address.street} ${address.houseNum}, Floor ${address.floor}, Apt ${address.apt}`;
 
         try {
-            await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+            console.log('Sending receipt to:', userEmail);
+            const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
                 to_email: userEmail,
                 to_name: currentUser?.name || 'Guest',
                 message: `Thank you for your order (Total: ₪${total}). Items: ${cart.map(i => `${i.name} (${i.size}ml)`).join(', ')}${deliveryStr}`,
                 link: window.location.origin
             }, PUBLIC_KEY);
+            console.log('Receipt sent successfully!', response);
         } catch (e: any) {
             console.error('Receipt send failed', e);
-            if (e.status === 404 || e.text?.includes('404')) {
-                alert('EmailJS Error: 404 Not Found. The Service ID, Template ID, or Public Key in CheckoutModal.tsx is incorrect/expired. Please update them.');
-            }
+            const errMsg = lang === 'he'
+                ? `שגיאה בשליחה למייל: ${e.text || e.message || 'שגיאה לא ידועה'}. אנא בדוק את הגדרות ה-EmailJS שלך.`
+                : `Failed to send confirmation email: ${e.text || e.message || 'Unknown error'}. Check your EmailJS settings.`;
+            alert(errMsg);
         }
     };
 
@@ -273,11 +279,27 @@ export default function CheckoutModal({
                                             onApprove={async (data, actions) => {
                                                 if (actions.order) {
                                                     try {
-                                                        await actions.order.capture();
-                                                        await handleApprove();
+                                                        const details = await actions.order.capture();
+
+                                                        // CRITICAL: Check if the transaction was actually successful
+                                                        if (details.status === 'COMPLETED') {
+                                                            await handleApprove();
+                                                        } else {
+                                                            // Handle cases where the payment was rejected or didn't complete
+                                                            console.error('Payment not completed:', details);
+                                                            const errMsg = lang === 'he'
+                                                                ? 'התשלום לא הושלם. אנא בדוק את אמצעי התשלום שלך ונסה שוב.'
+                                                                : 'Payment not completed. Please check your payment method and try again.';
+                                                            setError(errMsg);
+                                                            alert(errMsg);
+                                                        }
                                                     } catch (err: any) {
                                                         console.error('Capture FAILED:', err);
-                                                        setError(lang === 'he' ? `שגיאה באישור התשלום: ${err.message}` : `Payment capture failed: ${err.message}`);
+                                                        const errMsg = lang === 'he'
+                                                            ? `שגיאה באישור התשלום: ${err.message}`
+                                                            : `Payment capture failed: ${err.message}`;
+                                                        setError(errMsg);
+                                                        alert(errMsg);
                                                     }
                                                 }
                                             }}
